@@ -8,14 +8,17 @@ using System.Threading.Tasks;
 
 namespace SplitWise.Domain.Entities
 {
-    public class Group: BaseEntity
+    public class GroupMember : BaseEntity
     {
         [Required]
         [StringLength(100)]
-        public string? GroupName { get; set; }
-        public string? Description { get; set; }
-        public int CreatedByUserId { get; set; }
+        public int? GroupId { get; set; }
+        public int? UserId { get; set; }
+        public bool? IsAdmin { get; set; }
 
-        public virtual ICollection<GroupMember>? GroupMembers { get; set; }
+
+        public Group Group { get; set; }
+        public User User { get; set; }
+
     }
 }
