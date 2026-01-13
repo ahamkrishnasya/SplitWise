@@ -11,14 +11,12 @@ namespace SplitWise.Domain.Entities
     public class GroupMember : BaseEntity
     {
         [Required]
-        [StringLength(100)]
-        public int? GroupId { get; set; }
-        public int? UserId { get; set; }
+        public int GroupId { get; set; }
+        public string UserId { get; set; }
         public bool? IsAdmin { get; set; }
 
 
-        public Group Group { get; set; }
-        public User User { get; set; }
+        public virtual Group Group { get; set; }
 
     }
 }
