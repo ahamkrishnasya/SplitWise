@@ -14,7 +14,7 @@ namespace SplitWise.Domain.Entities
         [StringLength(100)]
         public string? GroupName { get; set; }
         public string? Description { get; set; }
-        public int CreatedByUserId { get; set; }
+        public string? CreatedByUserId { get; set; }
 
         public virtual ICollection<GroupMember>? GroupMembers { get; set; }
     }
