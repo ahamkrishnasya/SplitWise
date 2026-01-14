@@ -16,6 +16,9 @@ namespace SplitWise.Infrastructure.Data
 
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
+        public DbSet<ExpenseShare> ExpenseShares { get; set; }
+        public DbSet<Settlement> Settlements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,6 +37,9 @@ namespace SplitWise.Infrastructure.Data
                 .WithMany(g => g.GroupMembers)
                 .HasForeignKey(gm => gm.GroupId)
                 .IsRequired();
+
+
+           
         }
     }
 }
