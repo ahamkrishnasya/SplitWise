@@ -20,9 +20,30 @@ namespace SplitWise.Infrastructure.Data
         public DbSet<ExpenseShare> ExpenseShares { get; set; }
         public DbSet<Settlement> Settlements { get; set; }
 
+        #region modelBuilder
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+
+
+            builder.Entity<Group>()
+                .HasKey(g => g.Id);
+
+            builder.Entity<Group>()
+                .HasMany(g => g.GroupMembers)
+                .WithOne(gm => gm.Group)
+                .HasForeignKey(gm => gm.GroupId)
+                .IsRequired();
+
+            builder.Entity<Group>()
+                .Property(g => g.GroupName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+
+
 
 
             builder.Entity<GroupMember>()
@@ -31,16 +52,75 @@ namespace SplitWise.Infrastructure.Data
                 .HasForeignKey(gm => gm.UserId)
                 .IsRequired();
 
- 
             builder.Entity<GroupMember>()
-                .HasOne(gm => gm.Group)
-                .WithMany(g => g.GroupMembers)
-                .HasForeignKey(gm => gm.GroupId)
+                .HasIndex(gm => new { gm.UserId, gm.GroupId })
+                .IsUnique();
+
+
+
+
+            builder.Entity<Expense>()
+                .HasOne<Group>()
+                .WithMany()
+                .HasForeignKey(e => e.GroupId)
+                .IsRequired();
+
+            builder.Entity<Expense>()
+                .HasOne<GroupMember>()
+                .WithMany()
+                .HasForeignKey(e => e.PaidByGroupMemberId)
                 .IsRequired();
 
 
-           
+
+
+            builder.Entity<ExpenseShare>()
+                .HasKey(es => es.Id);
+
+            builder.Entity<ExpenseShare>()
+                .HasOne<Expense>()
+                .WithMany()
+                .HasForeignKey(es => es.ExpenseId)
+                .IsRequired();
+
+            builder.Entity<ExpenseShare>()
+                .HasOne<GroupMember>()
+                .WithMany()
+                .HasForeignKey(es => es.GroupMemberId)
+                .IsRequired();
+
+            builder.Entity<ExpenseShare>()
+                .HasIndex(es => new { es.ExpenseId, es.GroupMemberId })
+                .IsUnique(); 
+
+
+
+
+            builder.Entity<Settlement>()
+                .HasKey(s => s.Id);
+
+            builder.Entity<Settlement>()
+                .HasOne<Group>()
+                .WithMany()
+                .HasForeignKey(s => s.GroupId)
+                .IsRequired();
+
+            builder.Entity<Settlement>()
+                .HasOne<GroupMember>()
+                .WithMany()
+                .HasForeignKey(s => s.PaidByGroupMemberId)
+                .IsRequired();
+
+            builder.Entity<Settlement>()
+                .HasOne<GroupMember>()
+                .WithMany()
+                .HasForeignKey(s => s.PaidToGroupMemberId)
+                .IsRequired();
+
+
+
         }
+        #endregion
     }
 }
 

@@ -11,8 +11,8 @@ namespace SplitWise.Domain.Entities
     public class Settlement : BaseEntity
     {
         public int GroupId { get; set; }
-        public int PaidByUserId { get; set; }
-        public int PaidToUserId { get; set; }
+        public int PaidByGroupMemberId { get; set; }
+        public int PaidToGroupMemberId { get; set; }
         public decimal Amount { get; set; }
     }
 }
