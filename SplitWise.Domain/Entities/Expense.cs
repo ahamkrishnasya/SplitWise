@@ -12,7 +12,7 @@ namespace SplitWise.Domain.Entities
     {
         [Required]
         public int GroupId { get; set; }
-        public string PaidByUserId { get; set; }
+        public int PaidByGroupMemberId { get; set; }
         public string Description { get; set; }
         public decimal TotalAmount { get; set; }
 

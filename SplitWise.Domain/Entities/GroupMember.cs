@@ -15,7 +15,7 @@ namespace SplitWise.Domain.Entities
         public string UserId { get; set; }
         public bool? IsAdmin { get; set; }
 
-
+        //public ApplicationUser User { get; set; }
         public virtual Group Group { get; set; }
 
     }
