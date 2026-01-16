@@ -8,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace SplitWise.Domain.Entities
 {
-    public class GroupMember : BaseEntity
+    public class Expense : BaseEntity
     {
         [Required]
         public int GroupId { get; set; }
-        public string UserId { get; set; }
-        public bool? IsAdmin { get; set; }
-
-        //public ApplicationUser User { get; set; }
-        public virtual Group Group { get; set; }
+        public int PaidByGroupMemberId { get; set; }
+        public string Description { get; set; }
+        public decimal TotalAmount { get; set; }
 
     }
 }
