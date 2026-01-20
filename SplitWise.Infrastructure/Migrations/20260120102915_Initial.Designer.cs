@@ -12,8 +12,8 @@ using SplitWise.Infrastructure.Data;
 namespace SplitWise.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260119124449_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260120102915_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -522,13 +522,13 @@ namespace SplitWise.Infrastructure.Migrations
                     b.HasOne("SplitWise.Domain.Entities.Group", null)
                         .WithMany()
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SplitWise.Domain.Entities.GroupMember", null)
                         .WithMany()
                         .HasForeignKey("PaidByGroupMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -537,13 +537,13 @@ namespace SplitWise.Infrastructure.Migrations
                     b.HasOne("SplitWise.Domain.Entities.Expense", null)
                         .WithMany()
                         .HasForeignKey("ExpenseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SplitWise.Domain.Entities.GroupMember", null)
                         .WithMany()
                         .HasForeignKey("GroupMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -552,13 +552,13 @@ namespace SplitWise.Infrastructure.Migrations
                     b.HasOne("SplitWise.Domain.Entities.Group", "Group")
                         .WithMany("GroupMembers")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SplitWise.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany("GroupMembers")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Group");
@@ -569,19 +569,19 @@ namespace SplitWise.Infrastructure.Migrations
                     b.HasOne("SplitWise.Domain.Entities.Group", null)
                         .WithMany()
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SplitWise.Domain.Entities.GroupMember", null)
                         .WithMany()
                         .HasForeignKey("PaidByGroupMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SplitWise.Domain.Entities.GroupMember", null)
                         .WithMany()
                         .HasForeignKey("PaidToGroupMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
