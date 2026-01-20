@@ -35,6 +35,7 @@ namespace SplitWise.Infrastructure.Data
                 .HasMany(g => g.GroupMembers)
                 .WithOne(gm => gm.Group)
                 .HasForeignKey(gm => gm.GroupId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<Group>()
@@ -50,6 +51,7 @@ namespace SplitWise.Infrastructure.Data
                 .HasOne<ApplicationUser>()
                 .WithMany(u => u.GroupMembers)
                 .HasForeignKey(gm => gm.UserId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<GroupMember>()
@@ -83,12 +85,14 @@ namespace SplitWise.Infrastructure.Data
                 .HasOne<Expense>()
                 .WithMany()
                 .HasForeignKey(es => es.ExpenseId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<ExpenseShare>()
                 .HasOne<GroupMember>()
                 .WithMany()
                 .HasForeignKey(es => es.GroupMemberId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<ExpenseShare>()
@@ -105,18 +109,21 @@ namespace SplitWise.Infrastructure.Data
                 .HasOne<Group>()
                 .WithMany()
                 .HasForeignKey(s => s.GroupId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<Settlement>()
                 .HasOne<GroupMember>()
                 .WithMany()
                 .HasForeignKey(s => s.PaidByGroupMemberId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<Settlement>()
                 .HasOne<GroupMember>()
                 .WithMany()
                 .HasForeignKey(s => s.PaidToGroupMemberId)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
 
