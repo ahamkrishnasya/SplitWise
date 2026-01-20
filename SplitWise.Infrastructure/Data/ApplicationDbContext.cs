@@ -63,13 +63,15 @@ namespace SplitWise.Infrastructure.Data
                 .HasOne<Group>()
                 .WithMany()
                 .HasForeignKey(e => e.GroupId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Expense>()
                 .HasOne<GroupMember>()
                 .WithMany()
                 .HasForeignKey(e => e.PaidByGroupMemberId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
 
 
 
