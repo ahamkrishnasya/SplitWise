@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SplitWise.Domain.Entities
 {
-    public class Group: BaseEntity
+    public class Groups: BaseEntity
     {
         [Required]
         [StringLength(100)]
