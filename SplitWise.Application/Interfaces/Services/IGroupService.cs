@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SplitWise.Application.DTOs.Groups;
 
-namespace SplitWise.Application.Interfaces.Repositories
+namespace SplitWise.Application.Interfaces.Services
 {
     public interface IGroupService
     {
-        Task<string> GetGroupById(int id);
+        Task CreateGroupAsync(CreateGroupDto Data);
+        Task<IEnumerable<CreateGroupDto>> GetGroupsByUserIdAsync(string userId);
+        Task EditGroup (string userId);
     }
 }
