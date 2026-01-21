@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SplitWise.Application.Interfaces.Repositories;
+using SplitWise.Application.Interfaces.Services;
+using SplitWise.Application.Services;
 using SplitWise.Infrastructure.Data;
+using SplitWise.Infrastructure.Identity;
+using SplitWise.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +15,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+// Identity Registration
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
+
+// Application Services
+builder.Services.AddScoped<IGroupService, GroupService>();
+
+// Repositories
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+
 
 var app = builder.Build();
 
@@ -33,6 +52,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

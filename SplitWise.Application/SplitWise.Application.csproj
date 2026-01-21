@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SplitWise.Domain\SplitWise.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

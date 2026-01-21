@@ -14,7 +14,7 @@ namespace SplitWise.Infrastructure.Data
         {
         }
 
-        public DbSet<Group> Groups { get; set; }
+        public DbSet<Groups> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseShare> ExpenseShares { get; set; }
@@ -28,17 +28,17 @@ namespace SplitWise.Infrastructure.Data
 
 
 
-            builder.Entity<Group>()
+            builder.Entity<Groups>()
                 .HasKey(g => g.Id);
 
-            builder.Entity<Group>()
+            builder.Entity<Groups>()
                 .HasMany(g => g.GroupMembers)
-                .WithOne(gm => gm.Group)
+                .WithOne(gm => gm.Groups)
                 .HasForeignKey(gm => gm.GroupId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
-            builder.Entity<Group>()
+            builder.Entity<Groups>()
                 .Property(g => g.GroupName)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -62,7 +62,7 @@ namespace SplitWise.Infrastructure.Data
 
 
             builder.Entity<Expense>()
-                .HasOne<Group>()
+                .HasOne<Groups>()
                 .WithMany()
                 .HasForeignKey(e => e.GroupId)
                 .IsRequired()
@@ -106,7 +106,7 @@ namespace SplitWise.Infrastructure.Data
                 .HasKey(s => s.Id);
 
             builder.Entity<Settlement>()
-                .HasOne<Group>()
+                .HasOne<Groups>()
                 .WithMany()
                 .HasForeignKey(s => s.GroupId)
                 .OnDelete(DeleteBehavior.NoAction)
