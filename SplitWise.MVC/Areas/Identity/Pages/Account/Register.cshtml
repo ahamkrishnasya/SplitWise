@@ -1,0 +1,101 @@
+﻿@page
+@model SplitWise.MVC.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm p-4" style="max-width: 420px; width: 100%;">
+
+        <h3 class="text-center mb-1 fw-semibold">SplitWise</h3>
+        <p class="text-center text-muted mb-4">
+            Create an account to start tracking expenses
+        </p>
+
+        <form id="registerForm"
+              method="post"
+              asp-route-returnUrl="@Model.ReturnUrl"
+              novalidate>
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger small mb-2"
+                 role="alert">
+            </div>
+
+            <div class="row g-2">
+                <div class="col">
+                    <div class="form-floating">
+                        <input asp-for="Input.FirstName"
+                               class="form-control"
+                               autocomplete="given-name" />
+                        <label asp-for="Input.FirstName"></label>
+                        <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-floating">
+                        <input asp-for="Input.LastName"
+                               class="form-control"
+                               autocomplete="family-name" />
+                        <label asp-for="Input.LastName"></label>
+                        <span asp-validation-for="Input.LastName" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-floating mt-3">
+                <input asp-for="Input.Email"
+                       class="form-control"
+                       autocomplete="email" />
+                <label asp-for="Input.Email"></label>
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+            </div>
+
+            <div class="form-floating mt-3">
+                <input asp-for="Input.Password"
+                       type="password"
+                       class="form-control"
+                       autocomplete="new-password" />
+                <label asp-for="Input.Password"></label>
+                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+            </div>
+
+            <div class="form-floating mt-3">
+                <input asp-for="Input.ConfirmPassword"
+                       type="password"
+                       class="form-control"
+                       autocomplete="new-password" />
+                <label asp-for="Input.ConfirmPassword"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button id="registerSubmit"
+                    type="submit"
+                    class="btn btn-primary w-100 mt-4">
+                Create account
+            </button>
+        </form>
+
+        <p class="text-center mt-3 mb-0">
+            Already have an account?
+            <a asp-page="./Login">Log in</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const button = document.getElementById('registerSubmit');
+
+        form.addEventListener('submit', () => {
+            button.disabled = true;
+            button.innerText = 'Creating account...';
+        });
+    </script>
+}
