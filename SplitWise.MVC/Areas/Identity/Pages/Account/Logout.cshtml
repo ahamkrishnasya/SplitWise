@@ -1,0 +1,41 @@
+﻿@page
+@model SplitWise.MVC.Areas.Identity.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Log out";
+}
+
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm p-4 text-center" style="max-width: 420px; width: 100%;">
+
+        <h4 class="fw-semibold mb-2">@ViewData["Title"]</h4>
+
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <p class="text-muted mb-4">
+                Are you sure you want to log out?
+            </p>
+
+            <form asp-area="Identity"
+                  asp-page="/Account/Logout"
+                  asp-route-returnUrl="@Url.Page("/", new { area = "" })"
+                  method="post">
+
+                <button type="submit" class="btn btn-danger w-100">
+                    Log out
+                </button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-success mb-3" role="alert">
+                You have successfully logged out.
+            </div>
+
+            <a asp-area=""
+               asp-page="/Index"
+               class="btn btn-outline-primary w-100">
+                Go to home
+            </a>
+        }
+    </div>
+</div>
