@@ -7,8 +7,6 @@ namespace SplitWise.Infrastructure.Identity
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public string? MobileNumber { get; set; }
-
         public ICollection<GroupMember> GroupMembers { get; set; }
             = new HashSet<GroupMember>();
     }

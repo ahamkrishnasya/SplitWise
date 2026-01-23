@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using SplitWise.Application.Interfaces.Repositories;
 using SplitWise.Application.Interfaces.Services;
@@ -6,7 +7,7 @@ using SplitWise.Application.Services;
 using SplitWise.Infrastructure.Data;
 using SplitWise.Infrastructure.Identity;
 using SplitWise.Infrastructure.Services;
-
+using SplitWise.MVC.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,10 +22,15 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // Identity Registration
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultUI()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IEmailSender, DummyEmailSender>();
+
 
 // Application Services
 builder.Services.AddScoped<IGroupService, GroupService>();
