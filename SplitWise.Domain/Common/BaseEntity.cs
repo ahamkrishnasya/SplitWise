@@ -1,4 +1,4 @@
-﻿namespace SplitWise.Domain.Comman
+﻿namespace SplitWise.Domain.Common
 {
     public abstract class BaseEntity
     {

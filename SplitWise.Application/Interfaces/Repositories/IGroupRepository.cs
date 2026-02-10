@@ -12,6 +12,6 @@ namespace SplitWise.Application.Interfaces.Repositories
     public interface IGroupRepository
     {
         Task AddAsync(Groups group);
-        Task<IEnumerable<Groups>> GetGroupsByUserIdAsync(string userId);    
+        Task<IEnumerable<Groups>> GetGroupsByUserIdAsync(int userId);    
     }
 }

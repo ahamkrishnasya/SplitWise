@@ -31,7 +31,7 @@ namespace SplitWise.Application.Services
             await _groupRepository.AddAsync(group);
         }
 
-        public async Task<IEnumerable<CreateGroupDto>> GetGroupsByUserIdAsync(string userId)
+        public async Task<IEnumerable<CreateGroupDto>> GetGroupsByUserIdAsync(int userId)
         {
             var groups = await _groupRepository.GetGroupsByUserIdAsync(userId);
             var groupDtos = groups.Select(g => new CreateGroupDto
@@ -43,7 +43,7 @@ namespace SplitWise.Application.Services
             return groupDtos;
         }
 
-        public async Task EditGroup (string userId)
+        public async Task EditGroup (int userId)
         {
             
             await Task.CompletedTask;

@@ -10,6 +10,6 @@ namespace SplitWise.Application.DTOs.Groups
     {
         public string GroupName { get; set; }    
         public string Description { get; set; }
-        public string CreatedByUserId { get; set; }
+        public int CreatedByUserId { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace SplitWise.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Groups>> GetGroupsByUserIdAsync(string userId)
+        public async Task<IEnumerable<Groups>> GetGroupsByUserIdAsync(int userId)
         {
             return _context.Groups.Where(g => g.CreatedByUserId == userId).ToList();
         }   

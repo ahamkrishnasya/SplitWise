@@ -1,4 +1,4 @@
-﻿using SplitWise.Domain.Comman;
+﻿using SplitWise.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,7 +14,7 @@ namespace SplitWise.Domain.Entities
         [StringLength(100)]
         public string? GroupName { get; set; }
         public string? Description { get; set; }
-        public string? CreatedByUserId { get; set; }
+        public int CreatedByUserId { get; set; }
 
         public virtual ICollection<GroupMember>? GroupMembers { get; set; }
     }
