@@ -1,0 +1,104 @@
+﻿@page
+@model SplitWise.MVC.Areas.Identity.Pages.Account.LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm p-4" style="max-width: 420px; width: 100%;">
+
+        <h4 class="text-center fw-semibold mb-1">Welcome back</h4>
+        <p class="text-center text-muted mb-4">
+            Log in to continue tracking expenses
+        </p>
+
+        <form id="account" method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger small mb-2"
+                 role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email"
+                       class="form-control"
+                       autocomplete="username"
+                       aria-required="true" />
+                <label asp-for="Input.Email">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password"
+                       class="form-control"
+                       autocomplete="current-password"
+                       aria-required="true"
+                       type="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" asp-for="Input.RememberMe" />
+                    <label class="form-check-label" asp-for="Input.RememberMe">
+                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                    </label>
+                </div>
+
+                <a id="forgot-password"
+                   asp-page="./ForgotPassword"
+                   class="small">
+                    Forgot password?
+                </a>
+            </div>
+
+            <button id="login-submit"
+                    type="submit"
+                    class="btn btn-primary w-100 mb-3">
+                Log in
+            </button>
+        </form>
+
+        <div class="text-center mb-3">
+            <span class="text-muted small">Don’t have an account?</span>
+            <a asp-page="./Register"
+               asp-route-returnUrl="@Model.ReturnUrl"
+               class="fw-medium">
+                Sign up
+            </a>
+        </div>
+
+        @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+        {
+            <hr class="my-3" />
+
+            <form id="external-account"
+                  asp-page="./ExternalLogin"
+                  asp-route-returnUrl="@Model.ReturnUrl"
+                  method="post">
+
+                <p class="text-center text-muted small mb-2">
+                    Or continue with
+                </p>
+
+                <div class="d-grid gap-2">
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        <button type="submit"
+                                class="btn btn-outline-secondary"
+                                name="provider"
+                                value="@provider.Name"
+                                title="Log in using your @provider.DisplayName account">
+                            @provider.DisplayName
+                        </button>
+                    }
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

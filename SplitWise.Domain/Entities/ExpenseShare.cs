@@ -1,4 +1,4 @@
-﻿using SplitWise.Domain.Comman;
+﻿using SplitWise.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
