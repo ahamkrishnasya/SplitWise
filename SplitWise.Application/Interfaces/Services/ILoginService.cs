@@ -2,8 +2,8 @@
 
 namespace SplitWise.Application.Interfaces.Services
 {
-    public interface ISessionService
+    public interface ILoginService
     {
-        Task<SessionResponseDto> Login(SessionRequestDto request);
+        Task<LoginResponseDto> Login(LoginRequestDto request);
     }
 }

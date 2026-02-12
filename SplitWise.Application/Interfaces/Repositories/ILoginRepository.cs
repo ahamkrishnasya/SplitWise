@@ -9,7 +9,7 @@ using SplitWise.Domain.Entities;
 
 namespace SplitWise.Application.Interfaces.Repositories
 {
-    public interface ISessionRepository
+    public interface ILoginRepository
     { 
         Task<User> Login(User request);
     }

@@ -1,17 +1,13 @@
-using Microsoft.EntityFrameworkCore;
-using SplitWise.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using SplitWise.Application.Interfaces.Services;
-using SplitWise.Application.Services;
-using SplitWise.Application.Interfaces.Repositories;
-using SplitWise.Infrastructure.Services;
-
 using SplitWise.Application.Interfaces.Repositories;
 using SplitWise.Application.Interfaces.Services;
 using SplitWise.Application.Services;
+using SplitWise.Infrastructure.Data;
 using SplitWise.Infrastructure.Repositories;
+using SplitWise.Infrastructure.Services;
+using System.Text;
 
 
 
@@ -24,16 +20,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-<<<<<<< HEAD
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
+//Service Registration
+builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-=======
-//Service Registration
-builder.Services.AddScoped<ISessionService, SessionService>();
-
 //Repository Registration
-builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<ILoginRepository, LoginRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 //JWT Authentication
 
@@ -53,7 +48,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
->>>>>>> origin/Feature-Krishna
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
