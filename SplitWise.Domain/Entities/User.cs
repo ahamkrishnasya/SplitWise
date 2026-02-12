@@ -1,30 +1,25 @@
-﻿//using System.ComponentModel.DataAnnotations;
-//using SplitWise.Domain.Comman;
+﻿using System.ComponentModel.DataAnnotations;
+using SplitWise.Domain.Common;
 
-//namespace SplitWise.Domain.Entities
-//{
-//    public class User: BaseEntity
-//    {
-//        [Required]
-//        [StringLength(100)]
-//        public string? AccountName { get; set; }
+namespace SplitWise.Domain.Entities
+{
+    public class User : BaseEntity
+    {
+        [RegularExpression(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$")]
+        public string? Email { get; set; }
 
-//        [Required]
-//        [StringLength(100)]
-//        [RegularExpression( @"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
-//        public string? Email { get; set; }
+        public string? PasswordHash { get; set; }
 
-//        [Required]
-//        public string? Password { get; set; }
+        [MinLength(2)]
+        [RegularExpression(@"^(?=.*[a-zA-Z])[a-zA-Z ']+$")]
+        public string? FirstName { get; set; }
 
-//        [Required]
-//        public string? FName { get; set; }
+        [MinLength(2)]
+        [RegularExpression(@"^(?=.*[a-zA-Z])[a-zA-Z ']+$")]
+        public string? LastName { get; set; }
 
-//        [Required]
-//        public string? LName { get; set; }
+        public bool EmailConfirmed { get; set; } = false;
 
-//        [StringLength (15)]
-//        public string? MobileNumber { get; set; }
-//        public ICollection<GroupMember> GroupMembers { get; set; } = new HashSet<GroupMember>();
-//    }
-//}
+        public virtual ICollection<GroupMember> GroupMembers { get; set; } = new HashSet<GroupMember>();
+    }
+}

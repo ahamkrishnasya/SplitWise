@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SplitWise.Domain.Entities;
-using SplitWise.Infrastructure.Identity;
 
 namespace SplitWise.Infrastructure.Data
 {
     public class ApplicationDbContext
-        : IdentityDbContext<ApplicationUser>
+        : DbContext
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)
@@ -14,6 +12,7 @@ namespace SplitWise.Infrastructure.Data
         {
         }
 
+        public DbSet<User> Users { get; set; }
         public DbSet<Groups> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<Expense> Expenses { get; set; }
@@ -26,6 +25,33 @@ namespace SplitWise.Infrastructure.Data
         {
             base.OnModelCreating(builder);
 
+         
+            builder.Entity<User>()
+                .HasKey(u => u.Id);
+
+            builder.Entity<User>()
+                .Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(254);
+
+            builder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            builder.Entity<User>()
+                .Property(u => u.PasswordHash)
+                .IsRequired()
+                .HasMaxLength(512);
+
+            builder.Entity<User>()
+                .Property(u => u.FirstName)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            builder.Entity<User>()
+                .Property(u => u.LastName)
+                .IsRequired()
+                .HasMaxLength(50);
 
 
             builder.Entity<Groups>()
@@ -44,11 +70,8 @@ namespace SplitWise.Infrastructure.Data
                 .HasMaxLength(100);
 
 
-
-
-
             builder.Entity<GroupMember>()
-                .HasOne<ApplicationUser>()
+                .HasOne(gm => gm.User)
                 .WithMany(u => u.GroupMembers)
                 .HasForeignKey(gm => gm.UserId)
                 .OnDelete(DeleteBehavior.NoAction)
@@ -59,8 +82,7 @@ namespace SplitWise.Infrastructure.Data
                 .IsUnique();
 
 
-
-
+ 
             builder.Entity<Expense>()
                 .HasOne<Groups>()
                 .WithMany()
@@ -76,8 +98,7 @@ namespace SplitWise.Infrastructure.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
 
-
-
+        
             builder.Entity<ExpenseShare>()
                 .HasKey(es => es.Id);
 
@@ -97,8 +118,7 @@ namespace SplitWise.Infrastructure.Data
 
             builder.Entity<ExpenseShare>()
                 .HasIndex(es => new { es.ExpenseId, es.GroupMemberId })
-                .IsUnique(); 
-
+                .IsUnique();
 
 
 
@@ -125,11 +145,8 @@ namespace SplitWise.Infrastructure.Data
                 .HasForeignKey(s => s.PaidToGroupMemberId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
-
-
-
         }
+
         #endregion
     }
 }
-

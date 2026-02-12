@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitWise.Application", "Sp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitWise.Infrastructure", "SplitWise.Infrastructure\SplitWise.Infrastructure.csproj", "{2B589410-CA28-4B42-9401-1E31456CE162}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitWise.MVC", "SplitWise.MVC\SplitWise.MVC.csproj", "{1F87FC40-257F-48A2-9530-858CCB37031A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splitwise.API", "Splitwise.API\Splitwise.API.csproj", "{537388BA-29A7-E139-E996-82DFD6EC913A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +31,10 @@ Global
 		{2B589410-CA28-4B42-9401-1E31456CE162}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B589410-CA28-4B42-9401-1E31456CE162}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B589410-CA28-4B42-9401-1E31456CE162}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1F87FC40-257F-48A2-9530-858CCB37031A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F87FC40-257F-48A2-9530-858CCB37031A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F87FC40-257F-48A2-9530-858CCB37031A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F87FC40-257F-48A2-9530-858CCB37031A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{537388BA-29A7-E139-E996-82DFD6EC913A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{537388BA-29A7-E139-E996-82DFD6EC913A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{537388BA-29A7-E139-E996-82DFD6EC913A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{537388BA-29A7-E139-E996-82DFD6EC913A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,7 +43,7 @@ Global
 		{6499B498-DD36-45CB-AF99-A2EDE8CE1ACB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A2569F28-86AC-491C-88DB-18CA18A0E2A4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{2B589410-CA28-4B42-9401-1E31456CE162} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{1F87FC40-257F-48A2-9530-858CCB37031A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{537388BA-29A7-E139-E996-82DFD6EC913A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {545D345D-B92D-4CDA-8939-3735C9940EA6}
