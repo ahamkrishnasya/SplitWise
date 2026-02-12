@@ -9,13 +9,13 @@ using SplitWise.Domain.Entities;
 
 namespace SplitWise.Application.Services
 {
-    public class SessionService: ISessionService
+    public class UserService: IUserService
     {
-        private readonly ISessionRepository _SessionRepository; 
+        private readonly IUserRepository _UserRepository; 
 
-        public SessionService(ISessionRepository SessionRepository)
+        public UserService(IUserRepository UserRepository)
         {
-            _SessionRepository = SessionRepository;
+            _UserRepository = UserRepository;
         }   
 
         
