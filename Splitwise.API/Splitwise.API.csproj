@@ -9,15 +9,12 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
 	</ItemGroup>
 	
 <ItemGroup>
 	<ProjectReference Include="..\SplitWise.Application\SplitWise.Application.csproj" />
 	<ProjectReference Include="..\SplitWise.Infrastructure\SplitWise.Infrastructure.csproj" />
 </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
 
 </Project>
