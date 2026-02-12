@@ -8,6 +8,12 @@ using SplitWise.Application.Services;
 using SplitWise.Application.Interfaces.Repositories;
 using SplitWise.Infrastructure.Services;
 
+using SplitWise.Application.Interfaces.Repositories;
+using SplitWise.Application.Interfaces.Services;
+using SplitWise.Application.Services;
+using SplitWise.Infrastructure.Repositories;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +24,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+<<<<<<< HEAD
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+=======
 //Service Registration
 builder.Services.AddScoped<ISessionService, SessionService>();
 
@@ -42,6 +53,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+>>>>>>> origin/Feature-Krishna
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
