@@ -1,6 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using SplitWise.Infrastructure.Data;
 
+using SplitWise.Application.Interfaces.Repositories;
+using SplitWise.Application.Interfaces.Services;
+using SplitWise.Application.Services;
+using SplitWise.Infrastructure.Repositories;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,21 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using SplitWise.Application.Interfaces.Repositories;
 using SplitWise.Domain.Entities;
 using SplitWise.Infrastructure.Data;
-using SplitWise.Application.Interfaces.Repositories;
 
-namespace SplitWise.Infrastructure.Services
+namespace SplitWise.Infrastructure.Repositories
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _context;
-        public UserRepository(ApplicationDbContext Context)
+
+        public UserRepository(ApplicationDbContext context)
         {
-            _context = Context;
+            _context = context;
         }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task AddAsync(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

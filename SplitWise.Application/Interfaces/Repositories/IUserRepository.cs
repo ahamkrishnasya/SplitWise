@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SplitWise.Domain.Entities;
+﻿using SplitWise.Domain.Entities;
 
 namespace SplitWise.Application.Interfaces.Repositories
 {
     public interface IUserRepository
-    { 
+    {
+        Task<User?> GetByEmailAsync(string email);
+        Task AddAsync(User user);
     }
 }
+
