@@ -16,40 +16,38 @@ using System.Text.Json;
 
 namespace SplitWise.Application.Services
 {
-    public class SessionService: ISessionService
+    public class LoginService: ILoginService
     {
-        private readonly ISessionRepository _sessionRepository; 
+        private readonly ILoginRepository _sessionRepository; 
         private readonly IConfiguration _configuration; 
 
-        public SessionService(ISessionRepository SessionRepository, IConfiguration Configuration)
+        public LoginService(ILoginRepository SessionRepository, IConfiguration Configuration)
         {
             _sessionRepository = SessionRepository;
             _configuration = Configuration;
         }
 
-        public async Task<SessionResponseDto> Login(SessionRequestDto request)
+        public async Task<LoginResponseDto> Login(LoginRequestDto request)
         {
             var data = new User
             {
                 Email = request.Email,
                 PasswordHash = request.Password
             };
-            await _sessionRepository.Login(data);
+            var result = await _sessionRepository.Login(data);
 
+            if(result == null) { return null; } 
             var user = new User
             {
-                Email = data.Email,
-                PasswordHash = data.PasswordHash
+                Email = result.Email,
+                PasswordHash = result.PasswordHash
             };
+            
             string requestPasswordHash;
-            if (user != null)
-            {
-                var decodedvalue = Encoding.UTF8.GetString(Convert.FromBase64String(request.Password));
-                var json = JsonDocument.Parse("{" + decodedvalue + "}");
-                requestPasswordHash = json.RootElement.GetProperty("hashedPassword").GetString();
-            }
-
-            return new SessionResponseDto { Token = GenerateToken(user) };
+            var decodedvalue = Encoding.UTF8.GetString(Convert.FromBase64String(request.Password));
+            var json = JsonDocument.Parse("{" + decodedvalue + "}");
+            requestPasswordHash = json.RootElement.GetProperty("hashedPassword").GetString();
+            return new LoginResponseDto { Token = GenerateToken(user) };
         }
 
         private string GenerateToken(User user)

@@ -6,11 +6,11 @@ using SplitWise.Infrastructure.Data;
 
 namespace SplitWise.Infrastructure.Services
 {
-    public class SessionRepository : ISessionRepository
+    public class LoginRepository : ILoginRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public SessionRepository(ApplicationDbContext context)
+        public LoginRepository(ApplicationDbContext context)
         {
             _context = context;
         }

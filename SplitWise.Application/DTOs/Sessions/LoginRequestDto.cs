@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SplitWise.Application.DTOs.Sessions
 {
-    public class SessionRequestDto
+    public class LoginRequestDto
     {
         [Required]
         [EmailAddress]
