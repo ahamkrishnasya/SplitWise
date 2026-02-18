@@ -77,10 +77,10 @@ namespace Splitwise.API.Controllers
             );
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddMembers([FromBody] GroupMemberRequestDto request)
-        {
-            var member = _groupService.AddMembers(request);
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> AddMembers([FromBody] GroupMemberRequestDto request)
+        //{
+        //    var member = _groupService.AddMembers(request);
+        //}
     }
 }
