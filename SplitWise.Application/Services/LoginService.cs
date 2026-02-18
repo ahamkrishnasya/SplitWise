@@ -18,12 +18,12 @@ namespace SplitWise.Application.Services
 {
     public class LoginService: ILoginService
     {
-        private readonly ILoginRepository _sessionRepository; 
+        private readonly ILoginRepository _loginRepository; 
         private readonly IConfiguration _configuration; 
 
-        public LoginService(ILoginRepository SessionRepository, IConfiguration Configuration)
+        public LoginService(ILoginRepository loginRepository, IConfiguration Configuration)
         {
-            _sessionRepository = SessionRepository;
+            _loginRepository = loginRepository;
             _configuration = Configuration;
         }
 
@@ -34,11 +34,16 @@ namespace SplitWise.Application.Services
                 Email = request.Email,
                 PasswordHash = request.Password
             };
-            var result = await _sessionRepository.Login(data);
+            var result = await _loginRepository.Login(data);
 
-            if(result == null) { return null; } 
+            if(result == null || result.IsActive == false)
+            { 
+                return null; 
+            } 
+
             var user = new User
             {
+                Id = result.Id, 
                 Email = result.Email,
                 PasswordHash = result.PasswordHash
             };
@@ -47,15 +52,20 @@ namespace SplitWise.Application.Services
             var decodedvalue = Encoding.UTF8.GetString(Convert.FromBase64String(request.Password));
             var json = JsonDocument.Parse("{" + decodedvalue + "}");
             requestPasswordHash = json.RootElement.GetProperty("hashedPassword").GetString();
-            return new LoginResponseDto { Token = GenerateToken(user) };
+
+            if (requestPasswordHash == user.PasswordHash)
+            {
+                return new LoginResponseDto { Token = GenerateToken(user) };
+            }
+            return null;
         }
 
         private string GenerateToken(User user)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

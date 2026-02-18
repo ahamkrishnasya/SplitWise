@@ -1,4 +1,4 @@
-﻿using SplitWise.Application.DTOs.Groups;
+﻿using SplitWise.Application.DTOs.Friendships;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +9,10 @@ using SplitWise.Domain.Entities;
 
 namespace SplitWise.Application.Interfaces.Repositories
 {
-    public interface IGroupRepository
+    public interface IFriendshipRepository
     {
-        Task<Groups> AddAsync(Groups group);
-        Task<Groups> GetByIdAsync(int id);   
-        Task<List<GroupMember>> AddMembersAsync(GroupMember groupMembers);
+        Task<bool> IsExist(int user1, int user2);
+        Task<Friendship> AddAsync(Friendship group);
+        Task<List<Friendship>> GetAsync(int userid);
     }
 }
