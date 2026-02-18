@@ -6,7 +6,7 @@ namespace SplitWise.Application.Interfaces.Services
     {
         Task<GroupResponseDto> CreateGroupAsync(GroupRequestDto Data);
         Task<GroupResponseDto> GetGroupByIdAsync(int id);
-        Task<GroupMemberResponseDto> AddMembers(GroupMemberRequestDto request);
+        //Task<GroupMemberResponseDto> AddMembers(GroupMemberRequestDto request);
         Task EditGroup (int userId);
     }
 }
