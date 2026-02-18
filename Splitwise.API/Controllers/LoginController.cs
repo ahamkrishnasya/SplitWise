@@ -9,16 +9,16 @@ namespace Splitwise.API.Controllers
 {
     public class LoginController : Controller
     {
-       private readonly ILoginService _sessionService;
-        public LoginController(ILoginService sessionService)
+       private readonly ILoginService _loginService;
+        public LoginController(ILoginService loginService)
         {
-            _sessionService = sessionService;
+            _loginService = loginService;
         }
 
         [HttpPost("api/login")]
         public async Task<IActionResult> CreateSession([FromBody] LoginRequestDto request)
         {
-            var result = await _sessionService.Login(request);
+            var result = await _loginService.Login(request);
             if (result == null)
             {
                 return Unauthorized(
@@ -27,7 +27,7 @@ namespace Splitwise.API.Controllers
                         errorType: "Invalid_Credentials",
                         errorMessage: "Invalid login credentials provided",
                         httpContext: HttpContext,
-                        statusCode: 401
+                        statusCode: StatusCodes.Status401Unauthorized
                     )
                 );
             }
@@ -38,7 +38,7 @@ namespace Splitwise.API.Controllers
                         data: new {token = result.Token},
                         message: "User login successful",
                         httpContext: HttpContext,
-                        statusCode: 200
+                        statusCode: StatusCodes.Status200OK
                     )
                 );
             }

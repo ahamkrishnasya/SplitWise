@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using SplitWise.Application.DTOs.Common;
 using SplitWise.Application.Interfaces.Repositories;
 using SplitWise.Application.Interfaces.Services;
 using SplitWise.Application.Services;
@@ -15,18 +18,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-//Service Registration
+#region Service Registration
+
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IGroupService, GroupService>();
+builder.Services.AddScoped<IFriendshipService, FriendshipService>();
 
-//Repository Registration
+#endregion
+
+#region Repository Registration
+
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+
+#endregion
 
 //JWT Authentication
 
@@ -47,9 +59,60 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();  
+
+//Validation and Error Handling
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        return new BadRequestObjectResult(
+            ApiResponseFactory.Failure<object>(
+                message: "Validation failed",
+                errorType: "VALIDATION_ERROR",
+                errorMessage: "Invalid request body",
+                httpContext: context.HttpContext,
+                statusCode: StatusCodes.Status400BadRequest
+            )
+        );
+    };
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Splitwise.API",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter JWT token like: Bearer/bearer your_token"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference =  new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 

@@ -12,5 +12,6 @@ namespace SplitWise.Application.Interfaces.Repositories
     public interface ILoginRepository
     { 
         Task<User> Login(User request);
+        int GetUserId();
     }
 }
