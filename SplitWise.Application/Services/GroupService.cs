@@ -54,24 +54,24 @@ namespace SplitWise.Application.Services
             return result;
         }
 
-        public async Task<GroupMemberResponseDto> AddMembers(GroupMemberRequestDto request)
-        {
-            var userid = _loginRepository.GetUserId();  
-            List<GroupMember> groupMembers = new List<GroupMember>();   
-            foreach (var memberId in request.MemberId)
-                {
-                    var groupMember = new GroupMember
-                    {
-                        GroupId = request.GroupId,
-                        UserId = memberId,
-                        CreatedBy = userid, 
-                        IsAdmin = false
-                    };
-                    groupMembers.Add(groupMember);
-            }
-            var result = await _groupRepository.AddMembers(groupMembers);
-            return null;
-        }
+        //public async Task<GroupMemberResponseDto> AddMembers(GroupMemberRequestDto request)
+        //{
+        //    var userid = _loginRepository.GetUserId();  
+        //    List<GroupMember> groupMembers = new List<GroupMember>();   
+        //    foreach (var memberId in request.MemberId)
+        //        {
+        //            var groupMember = new GroupMember
+        //            {
+        //                GroupId = request.GroupId,
+        //                UserId = memberId,
+        //                CreatedBy = userid, 
+        //                IsAdmin = false
+        //            };
+        //            groupMembers.Add(groupMember);
+        //    }
+        //    var result = await _groupRepository.AddMembersAsync(groupMembers);
+        //    return null;
+        //}
         public async Task EditGroup (int userId)
         {
             

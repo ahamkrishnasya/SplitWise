@@ -13,6 +13,6 @@ namespace SplitWise.Application.Interfaces.Repositories
     {
         Task<Groups> AddAsync(Groups group);
         Task<Groups> GetByIdAsync(int id);   
-        Task<List<GroupMember>> AddMembersAsync(GroupMember groupMembers);
+        //Task<List<GroupMember>> AddMembersAsync(GroupMember groupMembers);
     }
 }

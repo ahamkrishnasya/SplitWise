@@ -43,11 +43,11 @@ namespace SplitWise.Infrastructure.Services
             return await _context.Groups.Where(x => x.Id == id).FirstOrDefaultAsync();
         }   
 
-        public async Task<GroupMember> AddMembersAsync(GroupMember groupMembers)
-        {
-            _context.AddRangeAsync(groupMembers);
-            await _context.SaveChangesAsync();
-            return (groupMembers);
-        }
+        //public async Task<GroupMember> AddMembersAsync(GroupMember groupMembers)
+        //{
+        //    _context.AddRangeAsync(groupMembers);
+        //    await _context.SaveChangesAsync();
+        //    return (groupMembers);
+        //}
     }
 }
