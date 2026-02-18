@@ -28,7 +28,7 @@ namespace Splitwise.API.Controllers
                         data: data,
                         message: "Registration successful.",
                         httpContext: HttpContext,
-                        statusCode: 201
+                        statusCode: StatusCodes.Status201Created
                     )
                 );
             }
@@ -41,7 +41,7 @@ namespace Splitwise.API.Controllers
                         errorType: "EMAIL_ALREADY_EXISTS",
                         errorMessage: "An account with this email already exists",
                         httpContext: HttpContext,
-                        statusCode: 409
+                        statusCode: StatusCodes.Status409Conflict
                     )
                 );
             }
@@ -52,7 +52,7 @@ namespace Splitwise.API.Controllers
                     errorType: "VALIDATION_ERROR",
                     errorMessage: "One or more validation errors occurred",
                     httpContext: HttpContext,
-                    statusCode: 400
+                    statusCode: StatusCodes.Status400BadRequest
                 )
             );
         }

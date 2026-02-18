@@ -3,8 +3,7 @@ using SplitWise.Domain.Entities;
 
 namespace SplitWise.Infrastructure.Data
 {
-    public class ApplicationDbContext
-        : DbContext
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)
@@ -12,12 +11,16 @@ namespace SplitWise.Infrastructure.Data
         {
         }
 
+        #region DbSets
         public DbSet<User> Users { get; set; }
         public DbSet<Groups> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseShare> ExpenseShares { get; set; }
         public DbSet<Settlement> Settlements { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
+
+        #endregion
 
         #region modelBuilder
 
@@ -145,6 +148,35 @@ namespace SplitWise.Infrastructure.Data
                 .HasForeignKey(s => s.PaidToGroupMemberId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
+
+            builder.Entity<Friendship>(entity =>
+            {
+                entity.HasKey(f => f.Id);
+
+                entity.Property(f => f.Id)
+                      .ValueGeneratedOnAdd();
+
+                entity.HasIndex(f => new { f.UserId1, f.UserId2 })
+                      .IsUnique();
+
+                entity.HasOne(f => f.User1)
+                      .WithMany(u => u.FriendshipsInitiated)
+                      .HasForeignKey(f => f.UserId1)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(f => f.User2)
+                      .WithMany(u => u.FriendshipsReceived)
+                      .HasForeignKey(f => f.UserId2)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.ToTable(t =>
+                {
+                    t.HasCheckConstraint(
+                        "CK_Friendship_UserId_Order",
+                        "[UserId1] < [UserId2]"
+                    );
+                });
+            });
         }
 
         #endregion

@@ -21,5 +21,7 @@ namespace SplitWise.Domain.Entities
         public bool EmailConfirmed { get; set; } = false;
 
         public virtual ICollection<GroupMember> GroupMembers { get; set; } = new HashSet<GroupMember>();
+        public virtual ICollection<Friendship> FriendshipsInitiated { get; set; } = new HashSet<Friendship>();
+        public virtual ICollection<Friendship> FriendshipsReceived { get; set; } = new HashSet<Friendship>();
     }
 }
