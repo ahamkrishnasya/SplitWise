@@ -11,8 +11,8 @@ namespace SplitWise.Application.Interfaces.Repositories
 {
     public interface IFriendshipRepository
     {
-        Task<bool> IsExist(int user1, int user2);
-        Task<Friendship> AddAsync(Friendship group);
+        Task<bool> IsExist(Friendship friend);
+        Task<List<Friendship>> AddAsync(List<Friendship> friend);
         Task<List<Friendship>> GetAsync(int userid);
     }
 }

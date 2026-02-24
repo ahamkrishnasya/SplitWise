@@ -21,9 +21,9 @@ namespace Splitwise.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddFriend(int id)
+        public async Task<IActionResult> AddFriends(FriendshipRequestDto request)
         {
-            var result = await _friendshipService.CreateFriendshipAsync(id);
+            var result = await _friendshipService.AddFriends(request);
             if (result == null)
             {
                 return BadRequest(

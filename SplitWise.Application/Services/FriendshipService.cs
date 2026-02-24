@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SplitWise.Application.Interfaces.Repositories;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.CodeAnalysis.CSharp;
 using SplitWise.Application.DTOs.Friendships;
+using SplitWise.Application.Interfaces.Repositories;
 using SplitWise.Application.Interfaces.Services;
 using SplitWise.Domain.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.CodeAnalysis.CSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SplitWise.Application.Services
 {
@@ -23,38 +24,44 @@ namespace SplitWise.Application.Services
             _loginRepository = loginRepository;
         }
 
-        public async Task<FriendshipResponseDto> CreateFriendshipAsync(int friendId)
+        public async Task<List<FriendshipResponseDto>> AddFriends(FriendshipRequestDto request)
         {
             int userid = _loginRepository.GetUserId();
 
-            if (friendId == userid) { 
-                return null;
+            List<Friendship> list = new List<Friendship>();
+
+            foreach(var id in request.FriendUserId)
+            {
+                Friendship friend = new Friendship();
+                if(userid != id)
+                {
+                    friend.UserId1 = Math.Min(id, userid);
+                    friend.UserId2 = Math.Max(id, userid);
+
+                    bool exists = await _FriendshipRepository.IsExist(friend);
+
+                    if (exists)
+                    {
+                       continue;
+                    }
+                    friend.CreatedBy = userid;  
+                    list.Add(friend);
+                }
+            }
+            var result = await _FriendshipRepository.AddAsync(list);
+
+            List<FriendshipResponseDto> response = new List<FriendshipResponseDto>();
+            foreach(var item in result)
+            {
+                FriendshipResponseDto friendshipDto = new FriendshipResponseDto(); 
+                friendshipDto.Id = item.Id;
+                friendshipDto.CreatedByUserId = item.CreatedBy;
+                friendshipDto.FriendUserId = (item.UserId1 ==  userid ? item.UserId2 : userid);
+
+                response.Add(friendshipDto);    
             }
 
-            int user1 = Math.Min(friendId, userid);
-            int user2 = Math.Max(friendId, userid);
-
-            bool exists = await _FriendshipRepository.IsExist(user1, user2);
-
-            if (exists)
-            {
-                return null;
-            }
-
-            var Friendship = new Friendship
-            {
-                UserId1 = user1,
-                UserId2 = user2,
-                CreatedBy = userid,
-            };
-            var result = await _FriendshipRepository.AddAsync(Friendship);
-
-            return new FriendshipResponseDto
-            {
-                Id = result.Id,
-                CreatedByUserId = result.UserId1,
-                FriendUserId = result.UserId2,
-            };
+            return response;
         }
 
 

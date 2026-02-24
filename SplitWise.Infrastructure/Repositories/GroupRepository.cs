@@ -19,9 +19,14 @@ namespace SplitWise.Infrastructure.Services
             _context = context;
         }
 
+        public async Task<List<Groups>> Groups(int userId)
+        {
+            return await _context.Groups.AsNoTracking().
+                Where(x => x.CreatedBy == userId).ToListAsync();
+        }
         public async Task<Groups> AddAsync(Groups data)
         {
-            _context.Add(data);
+            await _context.AddAsync(data);
             await _context.SaveChangesAsync();
 
             var groupMembers = new GroupMember
@@ -32,7 +37,7 @@ namespace SplitWise.Infrastructure.Services
                 CreatedBy = data.CreatedBy,
             };
 
-            _context.Add(groupMembers);
+            await _context.AddAsync(groupMembers);
             await _context.SaveChangesAsync();
 
             return(data);
@@ -40,14 +45,38 @@ namespace SplitWise.Infrastructure.Services
 
         public async Task<Groups> GetByIdAsync(int id)
         {
-            return await _context.Groups.Where(x => x.Id == id).FirstOrDefaultAsync();
-        }   
+            return await _context.Groups.AsNoTracking().
+                Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
 
-        //public async Task<GroupMember> AddMembersAsync(GroupMember groupMembers)
-        //{
-        //    _context.AddRangeAsync(groupMembers);
-        //    await _context.SaveChangesAsync();
-        //    return (groupMembers);
-        //}
+        public async Task<bool> IsAdmin(int userId, int groupId)
+        {
+            return await _context.GroupMembers.AsNoTracking().
+                Where(x => x.GroupId == groupId && x.UserId == userId && x.IsAdmin == true).AnyAsync();
+        }
+
+        public async Task<bool> CanAdd(GroupMember groupMember)
+        {
+            var user = await _context.Users.AsNoTracking().Where(x => x.Id == groupMember.UserId).AnyAsync();
+
+            if(user)
+            {
+                var member = await _context.GroupMembers.AsNoTracking().
+                    Where(x => x.GroupId == groupMember.GroupId && x.UserId == groupMember.UserId).AnyAsync();
+
+                return !member;
+            }
+            else
+            {
+                return user;
+            }
+            
+        }
+        public async Task<List<GroupMember>> AddMembersAsync(List<GroupMember> groupMembers)
+        {
+            await _context.AddRangeAsync(groupMembers);
+            await _context.SaveChangesAsync();
+            return (groupMembers);
+        }
     }
 }
