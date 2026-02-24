@@ -9,7 +9,6 @@ namespace SplitWise.Application.DTOs.Sessions
 {
     public class LoginResponseDto
     {
-        
         public string Token { get; set; }
     }
 }
