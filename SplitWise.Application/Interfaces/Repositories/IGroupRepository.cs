@@ -11,8 +11,11 @@ namespace SplitWise.Application.Interfaces.Repositories
 {
     public interface IGroupRepository
     {
+        Task<List<Groups>> Groups(int userId);
         Task<Groups> AddAsync(Groups group);
-        Task<Groups> GetByIdAsync(int id);   
-        //Task<List<GroupMember>> AddMembersAsync(GroupMember groupMembers);
+        Task<Groups> GetByIdAsync(int id);
+        Task<bool> IsAdmin(int userId, int groupId);
+        Task<bool> CanAdd(GroupMember groupMember);
+        Task<List<GroupMember>> AddMembersAsync(List<GroupMember> groupMembers);
     }
 }

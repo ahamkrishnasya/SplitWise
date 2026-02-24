@@ -11,6 +11,7 @@ using SplitWise.Infrastructure.Data;
 using SplitWise.Infrastructure.Repositories;
 using SplitWise.Infrastructure.Services;
 using System.Text;
+using Splitwise.API.Extensions;
 
 
 
@@ -77,11 +78,20 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
     {
+        var errors = context.ModelState
+        .Where(x => x.Value.Errors.Count > 0)
+        .SelectMany(x => x.Value.Errors.Select(e => new ApiError
+        {
+            type = "VALIDATION_ERROR",
+            message = e.ErrorMessage
+        }))
+        .ToList();
+
         return new BadRequestObjectResult(
             ApiResponseFactory.Failure<object>(
                 message: "Validation failed",
                 errorType: "VALIDATION_ERROR",
-                errorMessage: "Invalid request body",
+                errorMessage: string.Join(" | ", errors),
                 httpContext: context.HttpContext,
                 statusCode: StatusCodes.Status400BadRequest
             )
@@ -127,6 +137,7 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+app.UseGlobalException();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

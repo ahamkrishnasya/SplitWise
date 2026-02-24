@@ -10,7 +10,6 @@ namespace SplitWise.Application.DTOs.Friendships
     public class FriendshipRequestDto
     {
         [Required]
-        public int FriendUserId { get; set; }    
-        public int CreatedByUserId { get; set; }
+        public int[] FriendUserId { get; set; }   
     }
 }

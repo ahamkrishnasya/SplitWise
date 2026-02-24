@@ -9,8 +9,6 @@ namespace SplitWise.Application.DTOs.Groups
 {
     public class GroupMemberRequestDto
     {
-        [Required]
-        public int GroupId { get; set; }    
         public int[] MemberId { get; set; }
     }
 }
