@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/SplitWise.Infrastructure/Migrations/20260217112156_initialCreate.cs
+/SplitWise.Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs

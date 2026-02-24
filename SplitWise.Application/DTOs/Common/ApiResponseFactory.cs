@@ -54,5 +54,43 @@ namespace SplitWise.Application.DTOs.Common
                 timeStamp = DateTime.UtcNow.ToString("o")
             };
         }
+
+        public static ApiResponse<T> Failure<T>(
+            string message,
+            string errorType,
+            string errorMessage,
+            int statusCode = 400)
+        {
+            return new ApiResponse<T>
+            {
+                statusCode = statusCode,
+                success = false,
+                message = message,
+                data = default(T),
+                errors = new List<ApiError>
+                {
+                    new ApiError
+                    {
+                        type = errorType,
+                        message = errorMessage,
+                    }
+                }
+            };
+        }
+
+        public static ApiResponse<T> Success<T>(
+            T data,
+            string message,
+            int statusCode = 200)
+        {
+            return new ApiResponse<T>
+            {
+                statusCode = statusCode,
+                success = true,
+                message = message,
+                data = data,
+                errors = null,
+            };
+        }
     }
 }
