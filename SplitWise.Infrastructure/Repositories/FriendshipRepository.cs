@@ -19,20 +19,20 @@ namespace SplitWise.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<bool> IsExist(int user1, int user2)
+        public async Task<bool> IsExist(Friendship friend)
         {
-            return await _context.Friendships.AnyAsync(f => f.UserId1 == user1 && f.UserId2 == user2);
+            return await _context.Friendships.AnyAsync(f => f.UserId1 == friend.UserId1 && f.UserId2 == friend.UserId2);
         }   
-        public async Task<Friendship> AddAsync(Friendship data)
+        public async Task<List<Friendship>> AddAsync(List<Friendship> data)
         {
-            _context.Add(data);
+            await _context.AddRangeAsync(data);
             await _context.SaveChangesAsync();
             return (data);
         }
 
         public async Task<List<Friendship>> GetAsync(int userid)
         {
-            return await _context.Friendships.Where(x => x.UserId1 == userid || x.UserId2 == userid).ToListAsync();
+            return await _context.Friendships.AsNoTracking().Where(x => x.UserId1 == userid || x.UserId2 == userid).ToListAsync();
         }
 
     }

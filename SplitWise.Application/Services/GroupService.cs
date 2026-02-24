@@ -22,6 +22,17 @@ namespace SplitWise.Application.Services
             _loginRepository = loginRepository;
         }   
 
+        public async Task<List<GroupResponseDto>> Groups()
+        {
+            var userId = _loginRepository.GetUserId();
+            var groups = await _groupRepository.Groups(userId);
+
+            return groups.Select(x => new GroupResponseDto
+            {
+                GroupId = x.Id,
+                GroupName = x.GroupName
+            }).ToList();
+        }
         public async Task<GroupResponseDto> CreateGroupAsync(GroupRequestDto Data)
         {
             var group = new Groups
@@ -54,24 +65,54 @@ namespace SplitWise.Application.Services
             return result;
         }
 
-        //public async Task<GroupMemberResponseDto> AddMembers(GroupMemberRequestDto request)
-        //{
-        //    var userid = _loginRepository.GetUserId();  
-        //    List<GroupMember> groupMembers = new List<GroupMember>();   
-        //    foreach (var memberId in request.MemberId)
-        //        {
-        //            var groupMember = new GroupMember
-        //            {
-        //                GroupId = request.GroupId,
-        //                UserId = memberId,
-        //                CreatedBy = userid, 
-        //                IsAdmin = false
-        //            };
-        //            groupMembers.Add(groupMember);
-        //    }
-        //    var result = await _groupRepository.AddMembersAsync(groupMembers);
-        //    return null;
-        //}
+        public async Task<List<GroupMemberResponseDto>> AddMembers(GroupMemberRequestDto request, int id)
+        {
+            var userid = _loginRepository.GetUserId();
+
+            bool admin = await _groupRepository.IsAdmin(userid, id);
+
+            if (!admin)
+            {
+                return null;
+            }
+
+            List<GroupMember> groupMembers = new List<GroupMember>();
+            foreach (var memberId in request.MemberId)
+            {
+                if(userid == memberId)
+                {  
+                    continue;
+                }  
+                var groupMember = new GroupMember
+                {
+                    GroupId = id,
+                    UserId = memberId,
+                    CreatedBy = userid,
+                    IsAdmin = false
+                };
+                bool canAdd = await _groupRepository.CanAdd(groupMember);
+                if (!canAdd)
+                {
+                    continue;
+                }
+                groupMembers.Add(groupMember);
+            }
+
+            if(groupMembers != null)
+            {
+                var result = await _groupRepository.AddMembersAsync(groupMembers);
+
+                return result.Select(x => new GroupMemberResponseDto
+                {
+                    Id = x.Id,
+                    GroupId = x.GroupId,
+                    MemberId = x.UserId,
+                    CreatedByUserId = x.CreatedBy,
+                    IsAdmin = x.IsAdmin,
+                }).ToList();    
+            }
+            return null;
+        }
         public async Task EditGroup (int userId)
         {
             

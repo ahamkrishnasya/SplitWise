@@ -9,8 +9,8 @@ namespace SplitWise.Application.DTOs.Friendships
 {
     public class FriendshipResponseDto
     {
-        public int Id { get; set; }
-        public int FriendUserId { get; set; }    
-        public int CreatedByUserId { get; set; }
+        public int Id { get; set; } 
+        public int FriendUserId { get; set; }   
+        public int CreatedByUserId { get; set; }    
     }
 }

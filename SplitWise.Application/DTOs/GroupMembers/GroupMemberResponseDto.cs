@@ -9,10 +9,10 @@ namespace SplitWise.Application.DTOs.Groups
 {
     public class GroupMemberResponseDto
     {
-        [Required]
-        public int GroupId { get; set; } 
-        public string GroupName { get; set; }    
-        public string Description { get; set; }
+        public int Id { get; set; }
+        public int GroupId { get; set; }   
+        public int MemberId { get; set; }   
         public int CreatedByUserId { get; set; }
+        public bool? IsAdmin { get; set; }   
     }
 }
