@@ -1,0 +1,49 @@
+﻿using SplitWise.Application.DTOs.EmailVerification;
+using SplitWise.Application.Interfaces.Repositories;
+using SplitWise.Application.Interfaces.Services;
+
+namespace SplitWise.Application.Services
+{
+    public class EmailVerificationService : IEmailVerificationService
+    {
+        private readonly IEmailVerificationRepository _emailVerificationRepository;
+
+        public EmailVerificationService(IEmailVerificationRepository emailVerificationRepository)
+        {
+            _emailVerificationRepository = emailVerificationRepository;
+        }
+
+        public async Task<(VerifyEmailResponseDto? Data, List<(string Type, string Message)>? Errors)> VerifyEmailAsync(string token)
+        {
+            var emailToken = await _emailVerificationRepository.GetByTokenAsync(token);
+
+            if (emailToken == null)
+            {
+                return (null, new List<(string, string)>
+                {
+                    ("INVALID_TOKEN", "Verification token is invalid or does not exist")
+                });
+            }
+
+            if (emailToken.ExpiresAt < DateTime.UtcNow)
+            {
+                return (null, new List<(string, string)>
+                {
+                    ("TOKEN_EXPIRED", "Verification token has expired")
+                });
+            }
+
+            if (emailToken.IsUsed)
+            {
+                return (new VerifyEmailResponseDto { EmailVerified = true }, null);
+            }
+
+            emailToken.IsUsed = true;
+            emailToken.User.EmailConfirmed = true;
+
+            await _emailVerificationRepository.SaveChangesAsync();
+
+            return (new VerifyEmailResponseDto { EmailVerified = true }, null);
+        }
+    }
+}

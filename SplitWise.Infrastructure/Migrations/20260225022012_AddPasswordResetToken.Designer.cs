@@ -12,8 +12,8 @@ using SplitWise.Infrastructure.Data;
 namespace SplitWise.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260210212646_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20260225022012_AddPasswordResetToken")]
+    partial class AddPasswordResetToken
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,56 @@ namespace SplitWise.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SplitWise.Domain.Entities.EmailVerificationToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EmailVerificationTokens");
+                });
 
             modelBuilder.Entity("SplitWise.Domain.Entities.Expense", b =>
                 {
@@ -118,6 +168,51 @@ namespace SplitWise.Infrastructure.Migrations
                     b.ToTable("ExpenseShares");
                 });
 
+            modelBuilder.Entity("SplitWise.Domain.Entities.Friendship", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId2")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId2");
+
+                    b.HasIndex("UserId1", "UserId2")
+                        .IsUnique();
+
+                    b.ToTable("Friendships", t =>
+                        {
+                            t.HasCheckConstraint("CK_Friendship_UserId_Order", "[UserId1] < [UserId2]");
+                        });
+                });
+
             modelBuilder.Entity("SplitWise.Domain.Entities.GroupMember", b =>
                 {
                     b.Property<int>("Id")
@@ -177,9 +272,6 @@ namespace SplitWise.Infrastructure.Migrations
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -203,6 +295,53 @@ namespace SplitWise.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("SplitWise.Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTokens");
                 });
 
             modelBuilder.Entity("SplitWise.Domain.Entities.Settlement", b =>
@@ -311,6 +450,17 @@ namespace SplitWise.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SplitWise.Domain.Entities.EmailVerificationToken", b =>
+                {
+                    b.HasOne("SplitWise.Domain.Entities.User", "User")
+                        .WithMany("EmailVerificationTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SplitWise.Domain.Entities.Expense", b =>
                 {
                     b.HasOne("SplitWise.Domain.Entities.Groups", null)
@@ -341,6 +491,25 @@ namespace SplitWise.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SplitWise.Domain.Entities.Friendship", b =>
+                {
+                    b.HasOne("SplitWise.Domain.Entities.User", "User1")
+                        .WithMany("FriendshipsInitiated")
+                        .HasForeignKey("UserId1")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SplitWise.Domain.Entities.User", "User2")
+                        .WithMany("FriendshipsReceived")
+                        .HasForeignKey("UserId2")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
+                });
+
             modelBuilder.Entity("SplitWise.Domain.Entities.GroupMember", b =>
                 {
                     b.HasOne("SplitWise.Domain.Entities.Groups", "Groups")
@@ -356,6 +525,17 @@ namespace SplitWise.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Groups");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SplitWise.Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.HasOne("SplitWise.Domain.Entities.User", "User")
+                        .WithMany("PasswordResetTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -388,7 +568,15 @@ namespace SplitWise.Infrastructure.Migrations
 
             modelBuilder.Entity("SplitWise.Domain.Entities.User", b =>
                 {
+                    b.Navigation("EmailVerificationTokens");
+
+                    b.Navigation("FriendshipsInitiated");
+
+                    b.Navigation("FriendshipsReceived");
+
                     b.Navigation("GroupMembers");
+
+                    b.Navigation("PasswordResetTokens");
                 });
 #pragma warning restore 612, 618
         }

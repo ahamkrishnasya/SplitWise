@@ -19,6 +19,8 @@ namespace SplitWise.Infrastructure.Data
         public DbSet<ExpenseShare> ExpenseShares { get; set; }
         public DbSet<Settlement> Settlements { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
         #endregion
 
@@ -176,6 +178,45 @@ namespace SplitWise.Infrastructure.Data
                         "[UserId1] < [UserId2]"
                     );
                 });
+            });
+            builder.Entity<EmailVerificationToken>(entity =>
+            {
+                entity.HasKey(evt => evt.Id);
+
+                entity.Property(evt => evt.Token)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                entity.HasIndex(evt => evt.Token)
+                      .IsUnique();
+
+                entity.HasIndex(evt => evt.UserId);
+
+                entity.HasOne(evt => evt.User)
+                      .WithMany(u => u.EmailVerificationTokens)
+                      .HasForeignKey(evt => evt.UserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PasswordResetToken>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Token)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                entity.HasIndex(t => t.Token)
+                      .IsUnique();
+
+                entity.HasIndex(t => t.UserId);
+
+                entity.Property(t => t.ExpiresAt)
+                      .IsRequired();
+
+                entity.HasOne(t => t.User)
+                      .WithMany(u => u.PasswordResetTokens)
+                      .HasForeignKey(t => t.UserId)
+                      .OnDelete(DeleteBehavior.NoAction);
             });
         }
 
