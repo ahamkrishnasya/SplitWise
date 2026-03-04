@@ -10,6 +10,7 @@ using SplitWise.Application.Services;
 using SplitWise.Infrastructure.Data;
 using SplitWise.Infrastructure.Repositories;
 using SplitWise.Infrastructure.Services;
+using SplitWise.Infrastructure.Settings;
 using System.Text;
 using Splitwise.API.Extensions;
 
@@ -29,6 +30,9 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IGroupService, GroupService>();
 builder.Services.AddScoped<IFriendshipService, FriendshipService>();
+builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+builder.Services.AddScoped<IEmailService, GmailEmailService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 
 #endregion
 
@@ -38,8 +42,12 @@ builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+builder.Services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
+builder.Services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
 
 #endregion
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 //JWT Authentication
 
@@ -66,7 +74,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // frontend
+        policy.WithOrigins("http://localhost:4200","https://localhost:7032") // frontend
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
