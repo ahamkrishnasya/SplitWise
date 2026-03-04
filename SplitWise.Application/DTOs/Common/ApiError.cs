@@ -10,6 +10,6 @@ namespace SplitWise.Application.DTOs.Common
     {
         public string type { get; set; }    
         public string message { get; set; }
-        public string field { get; set; }
+        //public string field { get; set; }
     }
 }

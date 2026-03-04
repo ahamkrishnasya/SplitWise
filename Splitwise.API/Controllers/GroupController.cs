@@ -11,6 +11,7 @@ namespace Splitwise.API.Controllers
 {
     [ApiController]
     [Authorize]
+    [Route("api/groups")]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;
@@ -20,7 +21,6 @@ namespace Splitwise.API.Controllers
         }
 
         [HttpGet]
-        [Route("api/groups")]
         public async Task<IActionResult> Groups()
         {
             var result = await _groupService.Groups();
@@ -36,25 +36,20 @@ namespace Splitwise.API.Controllers
         }
 
         [HttpPost]
-        [Route("api/groups")]
         public async Task<IActionResult> CreateGroup([FromBody] GroupRequestDto request)
         {
             var result = await _groupService.CreateGroupAsync(request);
 
-            return CreatedAtAction(
-                nameof(GetGroupById),
-                new { id = result.GroupId },
-                ApiResponseFactory.Success(
-                    data: result,
-                    message: "Group created successfully.",
-                    httpContext: HttpContext,
-                    statusCode: StatusCodes.Status201Created
-                )
-            );
+            result.meta = new MetaData
+            {
+                timeStamp = DateTime.UtcNow.ToString("o"),
+                requestId = HttpContext.TraceIdentifier
+            };
+            return StatusCode(result.statusCode, result);
         }
 
         [HttpGet]
-        [Route("api/groups/{id:int}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> GetGroupById(int id)
         {
             var group = await _groupService.GetGroupByIdAsync(id);
@@ -81,8 +76,15 @@ namespace Splitwise.API.Controllers
             );
         }
 
+        //[HttpGet]
+        //[Route("{id:int}/members")]
+        //public async Task<IActionResult> AddMembers(int id)
+        //{
+        //    var result = await _groupService.AddMembers(id);
+        //}
+
         [HttpPost]
-        [Route("api/groups/{id:int}/members")]
+        [Route("{id:int}/members")]
         public async Task<IActionResult> AddMembers([FromBody] GroupMemberRequestDto request, int id)
         {
             var result = await _groupService.AddMembers(request, id);
@@ -112,6 +114,62 @@ namespace Splitwise.API.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> EditGroup(int id, [FromBody] GroupRequestDto request)
+        {
+            var result = await _groupService.EditGroup(request, id);
 
+            result.meta = new MetaData
+            {
+                timeStamp = DateTime.UtcNow.ToString("o"),
+                requestId = HttpContext.TraceIdentifier
+            };
+            return StatusCode(result.statusCode, result);
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> DeleteGroup(int id)
+        {
+            var result = await _groupService.DeleteGroup(id);
+            result.meta = new MetaData
+            {
+                timeStamp = DateTime.UtcNow.ToString("o"),
+                requestId = HttpContext.TraceIdentifier
+            };
+            return StatusCode(result.statusCode, result);
+        }
+
+        [HttpDelete]
+        [Route("{id:int}/members/{memberId:int}")]
+        public async Task<IActionResult> RemoveMembers(int id, int memberId)
+        {
+            var result = await _groupService.RemoveMember(id, memberId);
+            if (result == null)
+            {
+                return BadRequest(
+                    ApiResponseFactory.Failure<object>(
+                        message: "Unable to remove friend",
+                        errorType: "DeletionError",
+                        errorMessage: "Member removal failed",
+                        httpContext: HttpContext,
+                        statusCode: StatusCodes.Status400BadRequest
+                    )
+                );
+            }
+            else
+            {
+                return Ok(
+                    ApiResponseFactory.Success<object>(
+                        data: result,
+                        message: "Member removed successfully",
+                        httpContext: HttpContext,
+                        statusCode: StatusCodes.Status200OK
+                    )
+                );
+            }
+
+        }
     }
 }

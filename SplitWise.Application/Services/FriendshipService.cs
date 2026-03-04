@@ -83,5 +83,6 @@ namespace SplitWise.Application.Services
 
             return friendList;
         }
+
     }
 }
