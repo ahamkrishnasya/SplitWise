@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SplitWise.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,6 @@ namespace SplitWise.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     GroupName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedBy = table.Column<int>(type: "int", nullable: false),
@@ -53,6 +52,37 @@ namespace SplitWise.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Friendships",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId1 = table.Column<int>(type: "int", nullable: false),
+                    UserId2 = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedBy = table.Column<int>(type: "int", nullable: false),
+                    LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Friendships", x => x.Id);
+                    table.CheckConstraint("CK_Friendship_UserId_Order", "[UserId1] < [UserId2]");
+                    table.ForeignKey(
+                        name: "FK_Friendships_Users_UserId1",
+                        column: x => x.UserId1,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Friendships_Users_UserId2",
+                        column: x => x.UserId2,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -208,6 +238,17 @@ namespace SplitWise.Infrastructure.Migrations
                 column: "GroupMemberId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Friendships_UserId1_UserId2",
+                table: "Friendships",
+                columns: new[] { "UserId1", "UserId2" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Friendships_UserId2",
+                table: "Friendships",
+                column: "UserId2");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GroupMembers_GroupId",
                 table: "GroupMembers",
                 column: "GroupId");
@@ -245,6 +286,9 @@ namespace SplitWise.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ExpenseShares");
+
+            migrationBuilder.DropTable(
+                name: "Friendships");
 
             migrationBuilder.DropTable(
                 name: "Settlements");
