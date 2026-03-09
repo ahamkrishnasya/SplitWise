@@ -117,7 +117,11 @@ namespace SplitWise.Application.Services
             else
             {
                 return ApiResponseFactory.Success<object>(
-                        data: new { Token = GenerateToken(user) },
+                        data: new { Token = GenerateToken(user),
+                        result.Id,
+                        result.FirstName,
+                        result.LastName,
+                        result.Email},
                         message: "User login successful",
                         statusCode: StatusCodes.Status200OK
                 );

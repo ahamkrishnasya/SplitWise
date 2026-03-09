@@ -63,6 +63,22 @@ namespace Splitwise.API.Controllers
                 )
             );  
         }
+
+        [HttpGet]
+        [Route("nonfriends")]
+        public async Task<IActionResult> NotInFriends()
+        {
+            var result = await _friendshipService.NotInFriends();
+
+            return Ok(
+                ApiResponseFactory.Success(
+                    data: result,
+                    message: "These Users are not friends yet",
+                    httpContext: HttpContext,
+                    statusCode: StatusCodes.Status200OK
+                )
+            );
+        }
     }
 
     

@@ -209,7 +209,7 @@ namespace SplitWise.Application.Services
             );
         }
 
-        public async Task<ApiResponse<object>> RemoveMember(int memberId, int groupId)
+        public async Task<ApiResponse<object>> RemoveMember(int groupId, int memberId)
         {
             var userid = _loginRepository.GetUserId();
             bool admin = await _groupRepository.IsAdmin(userid, groupId);
@@ -239,6 +239,18 @@ namespace SplitWise.Application.Services
                 message: "Members removed successfully",
                 statusCode: StatusCodes.Status200OK
             );
+        }
+
+        public async Task<List<GroupMemberResponseDto>> GetMembers(int groupId)
+        {
+            return await _groupRepository.GetMembers(groupId);
+        }
+
+        public async Task<List<GroupMemberResponseDto>> NotInGroup(int groupId)
+        {
+            var userId = _loginRepository.GetUserId();
+
+            return await _groupRepository.NotInGroup(groupId, userId);
         }
     }
 }
