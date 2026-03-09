@@ -17,5 +17,8 @@ namespace SplitWise.Application.Interfaces.Repositories
         Task<bool> IsAdmin(int userId, int groupId);
         Task<bool> CanAdd(GroupMember groupMember);
         Task<List<GroupMember>> AddMembersAsync(List<GroupMember> groupMembers);
+        Task<Groups> EditGroup(Groups group);
+        Task<GroupMember> RemoveMemberAsync(int groupId, int userId);
+        //Task<List<GroupMember>> AddMembers(int id, int userId);
     }
 }

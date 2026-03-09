@@ -8,10 +8,12 @@ using SplitWise.Application.DTOs.Groups;
 using SplitWise.Application.Interfaces.Services;
 using SplitWise.Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SplitWise.Application.DTOs.Common;
+using Microsoft.AspNetCore.Http;
 
 namespace SplitWise.Application.Services
 {
-    public class GroupService: IGroupService
+    public class GroupService : IGroupService
     {
         private readonly IGroupRepository _groupRepository;
         private readonly ILoginRepository _loginRepository;
@@ -20,7 +22,7 @@ namespace SplitWise.Application.Services
         {
             _groupRepository = groupRepository;
             _loginRepository = loginRepository;
-        }   
+        }
 
         public async Task<List<GroupResponseDto>> Groups()
         {
@@ -30,10 +32,11 @@ namespace SplitWise.Application.Services
             return groups.Select(x => new GroupResponseDto
             {
                 GroupId = x.Id,
-                GroupName = x.GroupName
+                GroupName = x.GroupName,
+                Description = x.Description
             }).ToList();
         }
-        public async Task<GroupResponseDto> CreateGroupAsync(GroupRequestDto Data)
+        public async Task<ApiResponse<object>> CreateGroupAsync(GroupRequestDto Data)
         {
             var group = new Groups
             {
@@ -43,13 +46,26 @@ namespace SplitWise.Application.Services
             };
             var result = await _groupRepository.AddAsync(group);
 
-            return new GroupResponseDto
+            if (result == null)
             {
-                GroupId = result.Id,
-                GroupName = result.GroupName,
-                Description = result.Description,
-                CreatedByUserId = result.CreatedBy
-            };
+                return ApiResponseFactory.Failure<object>(
+                    message: "Group creation failed",
+                    errorType: "Duplicate_Group",
+                    errorMessage: "Group with same name is already existed",
+                    statusCode: StatusCodes.Status409Conflict
+                );
+            }
+            return ApiResponseFactory.Success<object>(
+                data: new
+                {
+                    id = result.Id,
+                    groupName = result.GroupName,
+                    description = result.Description,
+                    createdBy = result.CreatedBy
+                },
+                message: "Group created successfully",
+                statusCode: StatusCodes.Status201Created
+            );
         }
 
         public async Task<GroupResponseDto> GetGroupByIdAsync(int id)
@@ -65,6 +81,12 @@ namespace SplitWise.Application.Services
             return result;
         }
 
+        //public async Task<GroupMemberRequestDto> AddMembers(int id)
+        //{
+        //    var userId = _loginRepository.GetUserId();
+        //    var newMembers = await _groupRepository.AddMembers(id, userId);
+        //}
+
         public async Task<List<GroupMemberResponseDto>> AddMembers(GroupMemberRequestDto request, int id)
         {
             var userid = _loginRepository.GetUserId();
@@ -79,10 +101,10 @@ namespace SplitWise.Application.Services
             List<GroupMember> groupMembers = new List<GroupMember>();
             foreach (var memberId in request.MemberId)
             {
-                if(userid == memberId)
-                {  
+                if (userid == memberId)
+                {
                     continue;
-                }  
+                }
                 var groupMember = new GroupMember
                 {
                     GroupId = id,
@@ -98,7 +120,7 @@ namespace SplitWise.Application.Services
                 groupMembers.Add(groupMember);
             }
 
-            if(groupMembers != null)
+            if (groupMembers != null)
             {
                 var result = await _groupRepository.AddMembersAsync(groupMembers);
 
@@ -109,14 +131,114 @@ namespace SplitWise.Application.Services
                     MemberId = x.UserId,
                     CreatedByUserId = x.CreatedBy,
                     IsAdmin = x.IsAdmin,
-                }).ToList();    
+                }).ToList();
             }
             return null;
         }
-        public async Task EditGroup (int userId)
+
+        public async Task<ApiResponse<object>> EditGroup(GroupRequestDto request, int id)
         {
+            var userid = _loginRepository.GetUserId();
+            bool admin = await _groupRepository.IsAdmin(userid, id);
+            if (!admin)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Unauthorized to edit group",
+                    errorType: "Unauthorized",
+                    errorMessage: "Only group admins can edit the group",
+                    statusCode: StatusCodes.Status403Forbidden
+                );
+            }
+
+            var group = await _groupRepository.GetByIdAsync(id);
+            if (group == null)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Group not found",
+                    errorType: "Not_Found",
+                    errorMessage: $"No group found with id {id}",
+                    statusCode: StatusCodes.Status404NotFound
+                );
+            }
+            group.GroupName = request.GroupName;
+            group.Description = request.Description;
+            group.LastModifiedBy = userid;
+            group.LastModifiedAt = DateTime.UtcNow;
+
+            var result = await _groupRepository.EditGroup(group);
+
+            return ApiResponseFactory.Success<object>(
+                data: result,
+                message: "Group updated successfully",
+                statusCode: StatusCodes.Status200OK
+            );
+        }
+
+        public async Task<ApiResponse<object>> DeleteGroup(int id)
+        {
+            var userid = _loginRepository.GetUserId();
+            bool admin = await _groupRepository.IsAdmin(userid, id);
+            if (!admin)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Unauthorized to delete group",
+                    errorType: "Unauthorized",
+                    errorMessage: "Only group admins can delete the group",
+                    statusCode: StatusCodes.Status403Forbidden
+                );
+            }
+            var group = await _groupRepository.GetByIdAsync(id);
+            if (group == null)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Group not found",
+                    errorType: "Not_Found",
+                    errorMessage: $"No group found with id {id}",
+                    statusCode: StatusCodes.Status404NotFound
+                );
+            }
+            group.IsDeleted = true;
+            group.IsActive = false;
+            group.LastModifiedAt = DateTime.UtcNow;
+            group.LastModifiedBy = userid;
+            var result = await _groupRepository.EditGroup(group);
+            return ApiResponseFactory.Success<object>(
+                data: result,
+                message: "Group deleted successfully",
+                statusCode: StatusCodes.Status200OK
+            );
+        }
+
+        public async Task<ApiResponse<object>> RemoveMember(int memberId, int groupId)
+        {
+            var userid = _loginRepository.GetUserId();
+            bool admin = await _groupRepository.IsAdmin(userid, groupId);
+            if (!admin)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Unauthorized to remove members",
+                    errorType: "Unauthorized",
+                    errorMessage: "Only group admins can remove members from the group",
+                    statusCode: StatusCodes.Status403Forbidden
+                );
+            }
             
-            await Task.CompletedTask;
+            var result = await _groupRepository.RemoveMemberAsync(groupId, memberId); 
+
+            if(result == null)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message : "User not found",
+                    errorType : "Not_Found",
+                    errorMessage : "User doesn't belongs to group",
+                    statusCode : StatusCodes.Status404NotFound
+                );
+            }
+            return ApiResponseFactory.Success<object>(
+                data: memberId,
+                message: "Members removed successfully",
+                statusCode: StatusCodes.Status200OK
+            );
         }
     }
 }
