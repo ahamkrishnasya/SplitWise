@@ -6,5 +6,6 @@ namespace SplitWise.Application.Interfaces.Services
     {
         Task<List<FriendshipResponseDto>> AddFriends(FriendshipRequestDto request);
         Task<List<FriendshipResponseDto>> GetFriends();
+        Task<List<FriendshipResponseDto>> NotInFriends();
     }
 }
