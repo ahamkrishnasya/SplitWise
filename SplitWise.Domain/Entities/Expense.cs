@@ -15,6 +15,8 @@ namespace SplitWise.Domain.Entities
         public int PaidByGroupMemberId { get; set; }
         public string Description { get; set; }
         public decimal TotalAmount { get; set; }
+        public DateOnly ExpenseDate { get; set; }
+        public ICollection<ExpenseShare> Shares { get; set; } = new List<ExpenseShare>();
 
     }
 }
