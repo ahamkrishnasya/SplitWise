@@ -8,6 +8,7 @@ using SplitWise.Infrastructure.Data;
 using SplitWise.Application.Interfaces.Repositories;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using SplitWise.Application.DTOs.Friendships;
 
 namespace SplitWise.Infrastructure.Services
 {
@@ -30,9 +31,29 @@ namespace SplitWise.Infrastructure.Services
             return (data);
         }
 
-        public async Task<List<Friendship>> GetAsync(int userid)
+        public async Task<List<FriendshipResponseDto>> GetAsync(int userId)
         {
-            return await _context.Friendships.AsNoTracking().Where(x => x.UserId1 == userid || x.UserId2 == userid).ToListAsync();
+            return await _context.Friendships
+                .AsNoTracking()
+                .Where(f => f.UserId1 == userId || f.UserId2 == userId)
+                .Select(f => new FriendshipResponseDto
+                {
+                    Id = f.Id,
+                    FriendUserId = f.UserId1 == userId ? f.UserId2 : f.UserId1,
+                    CreatedByUserId = f.CreatedBy,
+                    FirstName = f.UserId1 == userId ? f.User2.FirstName : f.User1.FirstName,
+                    LastName = f.UserId1 == userId ? f.User2.LastName : f.User1.LastName
+                }).ToListAsync();
+        }
+
+        public async Task<List<User>> NotInFriends(int userId)
+        {
+            return await _context.Users
+                .Where(u => u.Id != userId &&
+                !_context.Friendships.Any(f =>
+                    (f.UserId1 == userId && f.UserId2 == u.Id) ||
+                    (f.UserId2 == userId && f.UserId1 == u.Id)))
+                .ToListAsync();
         }
 
     }

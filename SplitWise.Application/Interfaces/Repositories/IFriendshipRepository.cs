@@ -13,6 +13,7 @@ namespace SplitWise.Application.Interfaces.Repositories
     {
         Task<bool> IsExist(Friendship friend);
         Task<List<Friendship>> AddAsync(List<Friendship> friend);
-        Task<List<Friendship>> GetAsync(int userid);
+        Task<List<FriendshipResponseDto>> GetAsync(int userid);
+        Task<List<User>> NotInFriends(int userId);
     }
 }

@@ -9,6 +9,7 @@ using SplitWise.Application.Interfaces.Repositories;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SplitWise.Application.DTOs.Groups;
 
 namespace SplitWise.Infrastructure.Services
 {
@@ -111,6 +112,47 @@ namespace SplitWise.Infrastructure.Services
                 return member;
             }
             return null;
+        }
+
+        public async Task<List<GroupMemberResponseDto>> GetMembers(int groupId)
+        {
+            return await (
+                from gm in _context.GroupMembers
+                join u in _context.Users
+                    on gm.UserId equals u.Id
+                where gm.GroupId == groupId && gm.IsActive == true
+                select new GroupMemberResponseDto
+                {
+                    Id = gm.Id,
+                    GroupId = gm.GroupId,
+                    MemberId = gm.UserId,
+                    CreatedByUserId = gm.CreatedBy,
+                    IsAdmin = gm.IsAdmin,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName
+                }
+            ).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<GroupMemberResponseDto>> NotInGroup(int groupId, int userId)
+        {
+            return await (
+                from f in _context.Friendships
+                where (f.UserId1 == userId || f.UserId2 == userId)
+                      && f.IsActive == true
+                join u in _context.Users
+                    on (f.UserId1 == userId ? f.UserId2 : f.UserId1) equals u.Id
+                where !_context.GroupMembers
+                        .Any(gm => gm.GroupId == groupId && gm.UserId == u.Id)
+                select new GroupMemberResponseDto
+                {
+                    MemberId = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName
+                }
+            )
+            .AsNoTracking()
+            .ToListAsync();
         }
     }
 }

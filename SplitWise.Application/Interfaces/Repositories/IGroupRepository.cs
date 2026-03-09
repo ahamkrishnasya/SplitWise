@@ -19,6 +19,7 @@ namespace SplitWise.Application.Interfaces.Repositories
         Task<List<GroupMember>> AddMembersAsync(List<GroupMember> groupMembers);
         Task<Groups> EditGroup(Groups group);
         Task<GroupMember> RemoveMemberAsync(int groupId, int userId);
-        //Task<List<GroupMember>> AddMembers(int id, int userId);
+        Task<List<GroupMemberResponseDto>> GetMembers(int groupId);
+        Task<List<GroupMemberResponseDto>> NotInGroup(int groupId, int userId);
     }
 }

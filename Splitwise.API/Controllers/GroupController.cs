@@ -4,6 +4,7 @@ using SplitWise.Application.DTOs.Common;
 using SplitWise.Application.DTOs.Groups;
 using SplitWise.Application.DTOs.Sessions;
 using SplitWise.Application.Interfaces.Services;
+using SplitWise.Application.Services;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -170,6 +171,38 @@ namespace Splitwise.API.Controllers
                 );
             }
 
+        }
+
+        [HttpGet]
+        [Route("{id:int}/members")]
+        public async Task<IActionResult> GetMembers(int id)
+        {
+            var result = await _groupService.GetMembers(id);
+
+            return Ok(
+                ApiResponseFactory.Success<object>(
+                    data: result,
+                    message: "Group Member List",
+                    httpContext: HttpContext,
+                    statusCode: StatusCodes.Status200OK
+                )
+            );
+        }
+
+        [HttpGet]
+        [Route("{groupId:int}/nonMembers")]
+        public async Task<IActionResult> NotInGroup(int groupId)
+        {
+            var result = await _groupService.NotInGroup(groupId);
+
+            return Ok(
+                ApiResponseFactory.Success(
+                    data: result,
+                    message: "These Users are not in group yet",
+                    httpContext: HttpContext,
+                    statusCode: StatusCodes.Status200OK
+                )
+            );
         }
     }
 }

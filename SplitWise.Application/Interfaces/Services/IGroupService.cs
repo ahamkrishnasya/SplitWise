@@ -12,6 +12,7 @@ namespace SplitWise.Application.Interfaces.Services
         Task<ApiResponse<object>> EditGroup(GroupRequestDto request, int id);
         Task<ApiResponse<object>> DeleteGroup(int id);
         Task<ApiResponse<object>> RemoveMember(int groupId, int memberid);
-        //Task<GroupMemberRequestDto> AddMembers(int id);
+        Task<List<GroupMemberResponseDto>> GetMembers(int groupId);
+        Task<List<GroupMemberResponseDto>> NotInGroup(int groupId);
     }
 }

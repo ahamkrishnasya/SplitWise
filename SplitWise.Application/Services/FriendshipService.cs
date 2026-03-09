@@ -69,20 +69,27 @@ namespace SplitWise.Application.Services
         {
             var userid = _loginRepository.GetUserId();
 
-            var friends = await _FriendshipRepository.GetAsync(userid);
-
-            List<FriendshipResponseDto> friendList = new List<FriendshipResponseDto>();
-            foreach(var friend in friends)
-            {
-                FriendshipResponseDto dto = new FriendshipResponseDto();
-                dto.Id = friend.Id;
-                dto.FriendUserId = (friend.UserId1 == userid ? friend.UserId2 : friend.UserId1);
-                dto.CreatedByUserId = friend.CreatedBy;
-                friendList.Add(dto);
-            }
-
-            return friendList;
+            return await _FriendshipRepository.GetAsync(userid);
         }
 
+        public async Task<List<FriendshipResponseDto>> NotInFriends()
+        {
+            var userId = _loginRepository.GetUserId();
+
+            var notInFriends = await _FriendshipRepository.NotInFriends(userId);
+
+            List<FriendshipResponseDto> dto = new List<FriendshipResponseDto>();
+
+            foreach(var user in notInFriends)
+            {
+                FriendshipResponseDto friendshipdto = new FriendshipResponseDto();
+                friendshipdto.Id = user.Id;
+                friendshipdto.FirstName = user.FirstName;
+                friendshipdto.LastName = user.LastName;
+
+                dto.Add(friendshipdto);
+            }
+            return dto;
+        }
     }
 }
