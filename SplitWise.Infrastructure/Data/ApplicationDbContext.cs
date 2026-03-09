@@ -30,7 +30,7 @@ namespace SplitWise.Infrastructure.Data
         {
             base.OnModelCreating(builder);
 
-         
+
             builder.Entity<User>()
                 .HasKey(u => u.Id);
 
@@ -87,7 +87,7 @@ namespace SplitWise.Infrastructure.Data
                 .IsUnique();
 
 
- 
+
             builder.Entity<Expense>()
                 .HasOne<Groups>()
                 .WithMany()
@@ -103,13 +103,13 @@ namespace SplitWise.Infrastructure.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
 
-        
+
             builder.Entity<ExpenseShare>()
                 .HasKey(es => es.Id);
 
             builder.Entity<ExpenseShare>()
-                .HasOne<Expense>()
-                .WithMany()
+                .HasOne(es => es.Expense)
+                .WithMany(e => e.Shares)
                 .HasForeignKey(es => es.ExpenseId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();

@@ -33,6 +33,7 @@ builder.Services.AddScoped<IFriendshipService, FriendshipService>();
 builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
 builder.Services.AddScoped<IEmailService, GmailEmailService>();
 builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 #endregion
 
@@ -44,6 +45,7 @@ builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 builder.Services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
 builder.Services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
 #endregion
 
@@ -74,7 +76,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:4200","https://localhost:7032") // frontend
+        policy.WithOrigins("http://localhost:4200", "https://localhost:7032") // frontend
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
