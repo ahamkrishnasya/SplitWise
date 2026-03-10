@@ -23,8 +23,18 @@ namespace SplitWise.Infrastructure.Services
 
         public async Task<List<Groups>> Groups(int userId)
         {
-            return await _context.Groups.AsNoTracking().
-                Where(x => x.CreatedBy == userId && x.IsActive == true).ToListAsync();
+            return await (
+                from g in _context.Groups
+                join gm in _context.GroupMembers
+                    on g.Id equals gm.GroupId
+                where gm.UserId == userId
+                      && gm.IsActive == true
+                      && g.IsActive == true
+                select g
+            )
+            .AsNoTracking()
+            .Distinct()
+            .ToListAsync();
         }
         public async Task<Groups> AddAsync(Groups data)
         {
