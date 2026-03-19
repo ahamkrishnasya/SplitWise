@@ -6,6 +6,7 @@ namespace SplitWise.Application.Interfaces.Repositories
     {
         Task<User?> GetByEmailAsync(string email);
         Task AddAsync(User user);
+        Task<User?> GetUserById(int id);    
     }
 }
 

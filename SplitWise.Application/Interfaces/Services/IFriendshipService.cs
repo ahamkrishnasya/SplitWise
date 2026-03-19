@@ -1,4 +1,5 @@
-﻿using SplitWise.Application.DTOs.Friendships;
+﻿using SplitWise.Application.DTOs.EmailVerification;
+using SplitWise.Application.DTOs.Friendships;
 
 namespace SplitWise.Application.Interfaces.Services
 {
@@ -7,5 +8,7 @@ namespace SplitWise.Application.Interfaces.Services
         Task<List<FriendshipResponseDto>> AddFriends(FriendshipRequestDto request);
         Task<List<FriendshipResponseDto>> GetFriends();
         Task<List<FriendshipResponseDto>> NotInFriends();
+        Task<EmailInvitationResponseDto> InviteFriend(EmailInvitationRequestDto request);
+        Task<List<FriendshipResponseDto>> PendingInvites();
     }
 }
