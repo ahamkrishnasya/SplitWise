@@ -1,11 +1,12 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using SplitWise.Application.DTOs.EmailVerification;
 using SplitWise.Application.DTOs.Users;
 using SplitWise.Application.Interfaces.Repositories;
 using SplitWise.Application.Interfaces.Services;
 using SplitWise.Domain.Entities;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace SplitWise.Application.Services
 {
@@ -55,7 +56,6 @@ namespace SplitWise.Application.Services
                 errors.Add(("EMAIL_ALREADY_EXISTS", "An account with this email already exists"));
                 return (null, errors);
             }
-
 
             string hashedPassword;
             try

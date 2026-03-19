@@ -21,6 +21,7 @@ namespace SplitWise.Infrastructure.Data
         public DbSet<Friendship> Friendships { get; set; }
         public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public DbSet<FriendInvitation> FriendInvitations { get; set; }
 
         #endregion
 
@@ -207,6 +208,31 @@ namespace SplitWise.Infrastructure.Data
                       .WithMany(u => u.PasswordResetTokens)
                       .HasForeignKey(t => t.UserId)
                       .OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<FriendInvitation>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.RecipientEmail)
+                      .IsRequired()
+                      .HasMaxLength(256);
+
+                entity.Property(e => e.ExpiresAt)
+                      .IsRequired();
+
+                entity.Property(e => e.IsUsed)
+                      .HasDefaultValue(false);
+
+                entity.HasOne(e => e.CreatedByUser)
+                      .WithMany(u => u.SentInvitations)
+                      .HasForeignKey(e => e.CreatedBy)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new { e.CreatedBy, e.RecipientEmail })
+                      .IsUnique();
+
+                entity.HasIndex(e => e.RecipientEmail);
+                entity.HasIndex(e => e.ExpiresAt);
             });
         }
 

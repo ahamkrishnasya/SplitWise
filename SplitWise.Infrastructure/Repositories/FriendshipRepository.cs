@@ -20,9 +20,9 @@ namespace SplitWise.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<bool> IsExist(Friendship friend)
+        public async Task<Friendship> IsExist(Friendship friend)
         {
-            return await _context.Friendships.AnyAsync(f => f.UserId1 == friend.UserId1 && f.UserId2 == friend.UserId2);
+            return await _context.Friendships.FirstOrDefaultAsync(f => f.UserId1 == friend.UserId1 && f.UserId2 == friend.UserId2);
         }   
         public async Task<List<Friendship>> AddAsync(List<Friendship> data)
         {
@@ -56,5 +56,43 @@ namespace SplitWise.Infrastructure.Services
                 .ToListAsync();
         }
 
+        public async Task AddInvite(FriendInvitation friendInvitation)
+        {
+            await _context.FriendInvitations.AddAsync(friendInvitation);   
+            await _context.SaveChangesAsync();  
+        }
+
+        public async Task UpdateInvite(FriendInvitation friendInvitation)
+        {
+            _context.FriendInvitations.Update(friendInvitation);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<FriendInvitation> InviteExists(string email, int userId)
+        {
+            return await _context.FriendInvitations.FirstOrDefaultAsync(x => x.RecipientEmail == email && x.CreatedBy == userId);
+        }
+
+        public async Task<FriendInvitation?> GetInvitation(string email)
+        {
+            return await _context.FriendInvitations.FirstOrDefaultAsync(x => x.RecipientEmail == email);
+        }
+
+        public async Task UpdateInvitation(int invitationId)
+        {
+            var result = await _context.FriendInvitations.Where(x => x.Id == invitationId).FirstOrDefaultAsync();
+            if(result != null)
+            {
+                result.IsUsed = true;
+                result.IsActive = false;
+                _context.FriendInvitations.Update(result);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<List<FriendInvitation>> PendingInvites(int userId)
+        {
+            return await _context.FriendInvitations.AsNoTracking().Where(x => x.CreatedBy == userId && x.IsUsed == false).ToListAsync();
+        }
     }
 }
