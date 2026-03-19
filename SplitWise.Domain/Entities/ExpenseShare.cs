@@ -15,7 +15,6 @@ namespace SplitWise.Domain.Entities
         public Expense Expense { get; set; }
         public int GroupMemberId { get; set; }
         public decimal Amount { get; set; }
-
-
+        public ICollection<Settlement> Settlements { get; set; } = new List<Settlement>();
     }
 }

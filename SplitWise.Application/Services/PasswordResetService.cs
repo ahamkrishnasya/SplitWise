@@ -39,14 +39,11 @@ namespace SplitWise.Application.Services
 
             var user = await _userRepository.GetByEmailAsync(email);
 
-            // Do not reveal whether the email exists or is confirmed
             if (user == null || !user.EmailConfirmed)
                 return (true, null);
 
-            // Delete any existing reset tokens for this user
             await _passwordResetRepository.DeleteTokensByUserIdAsync(user.Id);
 
-            // Generate a cryptographically secure, URL-safe token
             var tokenBytes = new byte[32];
             RandomNumberGenerator.Fill(tokenBytes);
             var rawToken = Convert.ToBase64String(tokenBytes)
@@ -65,7 +62,6 @@ namespace SplitWise.Application.Services
             await _passwordResetRepository.AddAsync(resetToken);
             await _passwordResetRepository.SaveChangesAsync();
 
-            // Send the reset email — failure is non-fatal
             try
             {
                 var frontendBaseUrl = _configuration["Frontend:BaseUrl"];
@@ -74,7 +70,6 @@ namespace SplitWise.Application.Services
             }
             catch
             {
-                // Email send failure does not affect the response
             }
 
             return (true, null);

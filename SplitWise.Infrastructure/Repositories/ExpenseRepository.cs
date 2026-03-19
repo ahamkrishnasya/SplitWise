@@ -127,18 +127,114 @@ namespace SplitWise.Infrastructure.Services
                 return (null, errors);
             }
 
+            if (updatedExpense.PaidByGroupMemberId != existing.PaidByGroupMemberId)
+            {
+                var hasActiveSettlements = await _context.Settlements
+                    .AnyAsync(s => !s.IsDeleted && s.ExpenseShare.ExpenseId == expenseId);
+
+                if (hasActiveSettlements)
+                {
+                    errors.Add(("ValidationError",
+                        "Cannot change the payer, active settlements exist for this expense. Delete all settlements first."));
+                    return (null, errors);
+                }
+            }
+
+            if (updatedExpense.ExpenseDate != existing.ExpenseDate)
+            {
+                var minSettlementDate = await _context.Settlements
+                    .Where(s => !s.IsDeleted && s.ExpenseShare.ExpenseId == expenseId)
+                    .MinAsync(s => (DateOnly?)s.SettlementDate);
+
+                if (minSettlementDate.HasValue && updatedExpense.ExpenseDate > minSettlementDate.Value)
+                {
+                    errors.Add(("ValidationError",
+                        $"Cannot set expense date to {updatedExpense.ExpenseDate}, a settlement dated {minSettlementDate.Value} would precede it."));
+                    return (null, errors);
+                }
+            }
+
             existing.Description = updatedExpense.Description;
             existing.TotalAmount = updatedExpense.TotalAmount;
             existing.PaidByGroupMemberId = updatedExpense.PaidByGroupMemberId;
             existing.ExpenseDate = updatedExpense.ExpenseDate;
             existing.LastModifiedBy = currentUserId;
 
-            _context.ExpenseShares.RemoveRange(existing.Shares);
+            var activeOldShares = existing.Shares.Where(s => s.IsDeleted == false).ToList();
+            var oldSharesByMemberId = activeOldShares.ToDictionary(s => s.GroupMemberId);
+            var newSharesByMemberId = newShares.ToDictionary(s => s.GroupMemberId);
 
-            foreach (var share in newShares)
+            foreach (var oldShare in activeOldShares)
             {
-                share.CreatedBy = currentUserId;
-                existing.Shares.Add(share);
+                if (newSharesByMemberId.TryGetValue(oldShare.GroupMemberId, out var matchingNew))
+                {
+                    var totalSettled = await _context.Settlements
+                        .Where(s => !s.IsDeleted && s.ExpenseShareId == oldShare.Id)
+                        .SumAsync(s => (decimal?)s.Amount) ?? 0m;
+
+                    if (matchingNew.Amount < totalSettled)
+                    {
+                        var member = await _context.GroupMembers
+                            .Include(m => m.User)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(m => m.Id == oldShare.GroupMemberId);
+
+                        var memberName = member?.User != null
+                            ? $"{member.User.FirstName} {member.User.LastName}"
+                            : $"GroupMember {oldShare.GroupMemberId}";
+
+                        errors.Add(("ValidationError",
+                            $"Cannot reduce {memberName}'s share below already settled amount of {totalSettled}."));
+                        return (null, errors);
+                    }
+
+                    oldShare.Amount = matchingNew.Amount;
+                    oldShare.LastModifiedBy = currentUserId;
+                }
+                else
+                {
+                    var hasSettlements = await _context.Settlements
+                        .AnyAsync(s => s.ExpenseShareId == oldShare.Id && !s.IsDeleted);
+
+                    if (hasSettlements)
+                    {
+                        var member = await _context.GroupMembers
+                            .Include(m => m.User)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(m => m.Id == oldShare.GroupMemberId);
+
+                        var memberName = member?.User != null
+                            ? $"{member.User.FirstName} {member.User.LastName}"
+                            : $"GroupMember {oldShare.GroupMemberId}";
+
+                        errors.Add(("ValidationError",
+                            $"Cannot remove {memberName} from split, they have settlements recorded. Delete their settlements first."));
+                        return (null, errors);
+                    }
+
+                    oldShare.IsDeleted = true;
+                    oldShare.IsActive = false;
+                    oldShare.LastModifiedBy = currentUserId;
+                }
+            }
+
+            foreach (var newShare in newShares.Where(s => !oldSharesByMemberId.ContainsKey(s.GroupMemberId)))
+            {
+                var softDeleted = existing.Shares
+                    .FirstOrDefault(s => s.GroupMemberId == newShare.GroupMemberId && s.IsDeleted);
+
+                if (softDeleted != null)
+                {
+                    softDeleted.Amount = newShare.Amount;
+                    softDeleted.IsDeleted = false;
+                    softDeleted.IsActive = true;
+                    softDeleted.LastModifiedBy = currentUserId;
+                }
+                else
+                {
+                    newShare.CreatedBy = currentUserId;
+                    existing.Shares.Add(newShare);
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -204,7 +300,6 @@ namespace SplitWise.Infrastructure.Services
                 errors.Add(("Forbidden", "You are not a member of this group."));
                 return (null, errors);
             }
-
             var expenses = await _context.Expenses.AsNoTracking()
                 .Include(e => e.Shares)
                 .Where(e => e.GroupId == groupId && e.IsDeleted == false)

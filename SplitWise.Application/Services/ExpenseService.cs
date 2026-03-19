@@ -153,7 +153,7 @@ namespace SplitWise.Application.Services
                 PaidByGroupMemberId = expense.PaidByGroupMemberId,
                 ExpenseDate = expense.ExpenseDate,
                 CreatedAt = expense.CreatedAt,
-                Shares = expense.Shares.Select(s => new ExpenseShareResponseDto
+                Shares = expense.Shares.Where(s => !s.IsDeleted).Select(s => new ExpenseShareResponseDto
                 {
                     Id = s.Id,
                     GroupMemberId = s.GroupMemberId,
@@ -182,7 +182,7 @@ namespace SplitWise.Application.Services
                 PaidByGroupMemberId = expense.PaidByGroupMemberId,
                 ExpenseDate = expense.ExpenseDate,
                 CreatedAt = expense.CreatedAt,
-                Shares = expense.Shares.Select(s => new ExpenseShareResponseDto
+                Shares = expense.Shares.Where(s => !s.IsDeleted).Select(s => new ExpenseShareResponseDto
                 {
                     Id = s.Id,
                     GroupMemberId = s.GroupMemberId,
@@ -211,7 +211,7 @@ namespace SplitWise.Application.Services
                 PaidByGroupMemberId = expense.PaidByGroupMemberId,
                 ExpenseDate = expense.ExpenseDate,
                 CreatedAt = expense.CreatedAt,
-                Shares = expense.Shares.Select(s => new ExpenseShareResponseDto
+                Shares = expense.Shares.Where(s => !s.IsDeleted).Select(s => new ExpenseShareResponseDto
                 {
                     Id = s.Id,
                     GroupMemberId = s.GroupMemberId,

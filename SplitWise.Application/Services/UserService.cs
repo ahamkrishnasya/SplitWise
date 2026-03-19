@@ -83,7 +83,6 @@ namespace SplitWise.Application.Services
 
             await _userRepository.AddAsync(user);
 
-            // Generate cryptographically secure, URL-safe verification token
             var tokenBytes = new byte[32];
             RandomNumberGenerator.Fill(tokenBytes);
             var rawToken = Convert.ToBase64String(tokenBytes)
@@ -102,7 +101,6 @@ namespace SplitWise.Application.Services
 
             await _emailVerificationRepository.AddAsync(verificationToken);
 
-            // Send verification email — failure does NOT rollback user or token creation
             try
             {
                 var frontendBaseUrl = _configuration["Frontend:BaseUrl"];
@@ -111,7 +109,6 @@ namespace SplitWise.Application.Services
             }
             catch
             {
-                // Email send failure is non-fatal
             }
 
             var response = new RegisterUserResponseDto

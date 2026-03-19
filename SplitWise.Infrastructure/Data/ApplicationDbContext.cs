@@ -131,25 +131,15 @@ namespace SplitWise.Infrastructure.Data
                 .HasKey(s => s.Id);
 
             builder.Entity<Settlement>()
-                .HasOne<Groups>()
-                .WithMany()
-                .HasForeignKey(s => s.GroupId)
+                .HasOne(s => s.ExpenseShare)
+                .WithMany(es => es.Settlements)
+                .HasForeignKey(s => s.ExpenseShareId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<Settlement>()
-                .HasOne<GroupMember>()
-                .WithMany()
-                .HasForeignKey(s => s.PaidByGroupMemberId)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
+                .HasIndex(s => s.ExpenseShareId);
 
-            builder.Entity<Settlement>()
-                .HasOne<GroupMember>()
-                .WithMany()
-                .HasForeignKey(s => s.PaidToGroupMemberId)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
 
             builder.Entity<Friendship>(entity =>
             {
