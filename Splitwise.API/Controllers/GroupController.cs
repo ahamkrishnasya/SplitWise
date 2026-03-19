@@ -204,5 +204,6 @@ namespace Splitwise.API.Controllers
                 )
             );
         }
+
     }
 }

@@ -25,5 +25,6 @@ namespace SplitWise.Domain.Entities
         public virtual ICollection<Friendship> FriendshipsReceived { get; set; } = new HashSet<Friendship>();
         public virtual ICollection<EmailVerificationToken> EmailVerificationTokens { get; set; } = new HashSet<EmailVerificationToken>();
         public virtual ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new HashSet<PasswordResetToken>();
+        public virtual ICollection<FriendInvitation> SentInvitations { get; set; } = new HashSet<FriendInvitation>();
     }
 }

@@ -24,5 +24,10 @@ namespace SplitWise.Infrastructure.Repositories
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<User?> GetUserById(int id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }
