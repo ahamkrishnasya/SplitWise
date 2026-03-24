@@ -14,5 +14,10 @@ namespace SplitWise.Application.DTOs.Groups
         public string GroupName { get; set; }    
         public string Description { get; set; }
         public int CreatedByUserId { get; set; }
+        public string? CreatedByFirstName { get; set; }
+        public string? CreatedByLastName { get; set; }
+        public string? CreatedByEmail { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? LastModifiedAt { get; set; }
     }
 }

@@ -14,5 +14,6 @@ namespace SplitWise.Application.Interfaces.Services
         Task<ApiResponse<object>> RemoveMember(int groupId, int memberid);
         Task<List<GroupMemberResponseDto>> GetMembers(int groupId);
         Task<List<GroupMemberResponseDto>> NotInGroup(int groupId);
+        Task<ApiResponse<object>> TransferAdminAsync(int groupId, TransferAdminRequestDto request);
     }
 }

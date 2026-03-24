@@ -13,8 +13,12 @@ namespace SplitWise.Application.DTOs.Groups
         public int GroupId { get; set; }   
         public int MemberId { get; set; }   
         public int CreatedByUserId { get; set; }
+        public string? CreatedByFirstName { get; set; }
+        public string? CreatedByLastName { get; set; }
+        public string? CreatedByEmail { get; set; }
         public bool? IsAdmin { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        public string? Email { get; set; }
     }
 }

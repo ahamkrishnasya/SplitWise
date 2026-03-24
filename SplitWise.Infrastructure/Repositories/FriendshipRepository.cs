@@ -42,17 +42,21 @@ namespace SplitWise.Infrastructure.Services
                     FriendUserId = f.UserId1 == userId ? f.UserId2 : f.UserId1,
                     CreatedByUserId = f.CreatedBy,
                     FirstName = f.UserId1 == userId ? f.User2.FirstName : f.User1.FirstName,
-                    LastName = f.UserId1 == userId ? f.User2.LastName : f.User1.LastName
-                }).ToListAsync();
+                    LastName = f.UserId1 == userId ? f.User2.LastName : f.User1.LastName,
+                    Email = f.UserId1 == userId ? f.User2.Email : f.User1.Email
+                }).Where(f => _context.Users.Any(u => u.Id == f.FriendUserId && u.IsActive == true && !u.IsDeleted))
+                .ToListAsync();
         }
 
         public async Task<List<User>> NotInFriends(int userId)
         {
             return await _context.Users
-                .Where(u => u.Id != userId &&
-                !_context.Friendships.Any(f =>
-                    (f.UserId1 == userId && f.UserId2 == u.Id) ||
-                    (f.UserId2 == userId && f.UserId1 == u.Id)))
+                .Where(u => u.Id != userId
+                    && u.IsActive == true
+                    && !u.IsDeleted
+                    && !_context.Friendships.Any(f =>
+                        (f.UserId1 == userId && f.UserId2 == u.Id) ||
+                        (f.UserId2 == userId && f.UserId1 == u.Id)))
                 .ToListAsync();
         }
 

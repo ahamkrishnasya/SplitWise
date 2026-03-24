@@ -21,9 +21,8 @@ namespace SplitWise.Application.Services
     public class LoginService: ILoginService
     {
         private readonly ILoginRepository _loginRepository; 
-        private readonly IConfiguration _configuration; 
-
-        public LoginService(ILoginRepository loginRepository, IConfiguration Configuration)
+        private readonly IConfiguration _configuration;
+        public LoginService(ILoginRepository loginRepository, IConfiguration Configuration, IUserRepository userRepository)
         {
             _loginRepository = loginRepository;
             _configuration = Configuration;
@@ -66,9 +65,9 @@ namespace SplitWise.Application.Services
                         errorMessage: "No account with this eamil",
                         statusCode: StatusCodes.Status401Unauthorized
                 );
-            } 
+            }
 
-            if(result.IsActive == false)
+            if (result.IsActive == false)
             {
                 return ApiResponseFactory.Failure<object>(
                         message: "User login failed",

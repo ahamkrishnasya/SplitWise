@@ -113,5 +113,74 @@ namespace SplitWise.Infrastructure.Services
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
         }
+        public async Task SendEmailChangeVerificationAsync(string toNewEmail, string confirmationUrl)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("MoneySplit", _emailSettings.Username));
+            message.To.Add(MailboxAddress.Parse(toNewEmail));
+            message.Subject = "Confirm your new email address";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = $@"
+                    <p>You requested an email address change on your Moneysplit account.</p>
+                    <p>Click the link below to confirm your new email address:</p>
+                    <p><a href=""{confirmationUrl}"">{confirmationUrl}</a></p>
+                    <p>This link expires in 24 hours. If you did not request this, please contact support immediately.</p>"
+            };
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+        }
+
+        public async Task SendEmailChangeNotificationAsync(string toOldEmail)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("MoneySplit", _emailSettings.Username));
+            message.To.Add(MailboxAddress.Parse(toOldEmail));
+            message.Subject = "Your email address is being changed";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = $@"
+                    <p>A request was made to change the email address associated with your Moneysplit account.</p>
+                    <p>If you did not request this change, please contact support immediately.</p>"
+            };
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+        }
+
+        public async Task SendAccountDeletionAsync(string toEmail)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("MoneySplit", _emailSettings.Username));
+            message.To.Add(MailboxAddress.Parse(toEmail));
+            message.Subject = "Your MoneySplit account has been deactivated";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = @"
+                    <p>Your MoneySplit account has been permanently deactivated.</p>
+                    <p>All your data has been retained but your account is no longer accessible.</p>
+                    <p>If this was a mistake or you'd like to recover your account, please contact our support team.</p>
+                    <p>Thanks for being part of MoneySplit.<br/>The MoneySplit Team</p>"
+            };
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            await client.ConnectAsync(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+        }
     }
 }

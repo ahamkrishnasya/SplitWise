@@ -7,19 +7,11 @@ using System.Threading.Tasks;
 
 namespace SplitWise.Application.DTOs.Settlements
 {
-    public class PatchSettlementRequestDto : IValidatableObject
+    public class PatchSettlementRequestDto
     {
         public decimal? Amount { get; set; }
 
         public DateOnly? SettlementDate { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (Amount is null && SettlementDate is null)
-                yield return new ValidationResult(
-                    "At least one of Amount or SettlementDate must be provided.",
-                    new[] { nameof(Amount), nameof(SettlementDate) }
-                );
-        }
     }
 }
+
