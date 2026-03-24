@@ -35,6 +35,7 @@ builder.Services.AddScoped<IEmailService, GmailEmailService>();
 builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ISettlementService, SettlementService>();
+builder.Services.AddScoped<IActivityService, ActivityService>();    
 
 
 #endregion
@@ -49,7 +50,7 @@ builder.Services.AddScoped<IEmailVerificationRepository, EmailVerificationReposi
 builder.Services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<ISettlementRepository, SettlementRepository>();
-
+builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 
 #endregion
 
