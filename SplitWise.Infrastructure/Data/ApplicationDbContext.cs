@@ -22,6 +22,7 @@ namespace SplitWise.Infrastructure.Data
         public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<FriendInvitation> FriendInvitations { get; set; }
+        public DbSet<EmailChangeToken> EmailChangeTokens { get; set; }
 
         #endregion
 
@@ -233,6 +234,31 @@ namespace SplitWise.Infrastructure.Data
 
                 entity.HasIndex(e => e.RecipientEmail);
                 entity.HasIndex(e => e.ExpiresAt);
+            });
+            builder.Entity<EmailChangeToken>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Token)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                entity.HasIndex(t => t.Token)
+                      .IsUnique();
+
+                entity.HasIndex(t => t.UserId);
+
+                entity.Property(t => t.NewEmail)
+                      .IsRequired()
+                      .HasMaxLength(254);
+
+                entity.Property(t => t.ExpiresAt)
+                      .IsRequired();
+
+                entity.HasOne(t => t.User)
+                      .WithMany(u => u.EmailChangeTokens)
+                      .HasForeignKey(t => t.UserId)
+                      .OnDelete(DeleteBehavior.NoAction);
             });
         }
 

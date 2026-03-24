@@ -129,6 +129,19 @@ namespace Splitwise.API.Controllers
             return StatusCode(result.statusCode, result);
         }
 
+        [HttpPut]
+        [Route("{id:int}/admin")]
+        public async Task<IActionResult> TransferAdmin(int id, [FromBody] TransferAdminRequestDto request)
+        {
+            var result = await _groupService.TransferAdminAsync(id, request);
+            result.meta = new MetaData
+            {
+                timeStamp = DateTime.UtcNow.ToString("o"),
+                requestId = HttpContext.TraceIdentifier
+            };
+            return StatusCode(result.statusCode, result);
+        }
+
         [HttpDelete]
         [Route("{id:int}")]
         public async Task<IActionResult> DeleteGroup(int id)

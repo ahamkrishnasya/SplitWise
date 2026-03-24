@@ -102,6 +102,7 @@ namespace SplitWise.Application.Services
                 friendshipdto.Id = user.Id;
                 friendshipdto.FirstName = user.FirstName;
                 friendshipdto.LastName = user.LastName;
+                friendshipdto.Email = user.Email;
 
                 dto.Add(friendshipdto);
             }
