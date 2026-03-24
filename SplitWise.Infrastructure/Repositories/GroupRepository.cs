@@ -21,21 +21,55 @@ namespace SplitWise.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<List<Groups>> Groups(int userId)
+        public async Task<List<GroupResponseDto>> Groups(int userId)
         {
             return await (
                 from g in _context.Groups
-                join gm in _context.GroupMembers
-                    on g.Id equals gm.GroupId
-                where gm.UserId == userId
-                      && gm.IsActive == true
-                      && g.IsActive == true
-                select g
+                join gm in _context.GroupMembers on g.Id equals gm.GroupId
+                join u in _context.Users on g.CreatedBy equals u.Id
+                where gm.UserId == userId && gm.IsActive == true && g.IsActive == true
+                select new GroupResponseDto
+                {
+                    GroupId = g.Id,
+                    GroupName = g.GroupName,
+                    Description = g.Description,
+                    CreatedByUserId = g.CreatedBy,
+                    CreatedByFirstName = u.FirstName,
+                    CreatedByLastName = u.LastName,
+                    CreatedByEmail = u.Email,
+                    CreatedAt = g.CreatedAt,
+                    LastModifiedAt = g.LastModifiedAt
+                }
             )
             .AsNoTracking()
+            .OrderByDescending(g => g.CreatedAt)
             .Distinct()
             .ToListAsync();
         }
+
+        public async Task<GroupResponseDto?> GetGroupDetailAsync(int id)
+        {
+            return await (
+                from g in _context.Groups
+                join u in _context.Users on g.CreatedBy equals u.Id
+                where g.Id == id
+                select new GroupResponseDto
+                {
+                    GroupId = g.Id,
+                    GroupName = g.GroupName,
+                    Description = g.Description,
+                    CreatedByUserId = g.CreatedBy,
+                    CreatedByFirstName = u.FirstName,
+                    CreatedByLastName = u.LastName,
+                    CreatedByEmail = u.Email,
+                    CreatedAt = g.CreatedAt,
+                    LastModifiedAt = g.LastModifiedAt
+                }
+            )
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        }
+
         public async Task<Groups> AddAsync(Groups data)
         {
             var exist = await _context.Groups.AsNoTracking().
@@ -128,18 +162,24 @@ namespace SplitWise.Infrastructure.Services
         {
             return await (
                 from gm in _context.GroupMembers
-                join u in _context.Users
-                    on gm.UserId equals u.Id
+                join u in _context.Users on gm.UserId equals u.Id
+                join cu in _context.Users on gm.CreatedBy equals cu.Id into creatorJoin
+                from cu in creatorJoin.DefaultIfEmpty()
                 where gm.GroupId == groupId && gm.IsActive == true
+                      && u.IsActive == true && !u.IsDeleted
                 select new GroupMemberResponseDto
                 {
                     Id = gm.Id,
                     GroupId = gm.GroupId,
                     MemberId = gm.UserId,
                     CreatedByUserId = gm.CreatedBy,
+                    CreatedByFirstName = cu != null ? cu.FirstName : null,
+                    CreatedByLastName = cu != null ? cu.LastName : null,
+                    CreatedByEmail = cu != null ? cu.Email : null,
                     IsAdmin = gm.IsAdmin,
                     FirstName = u.FirstName,
-                    LastName = u.LastName
+                    LastName = u.LastName,
+                    Email = u.Email
                 }
             ).AsNoTracking().ToListAsync();
         }
@@ -152,8 +192,9 @@ namespace SplitWise.Infrastructure.Services
                       && f.IsActive == true
                 join u in _context.Users
                     on (f.UserId1 == userId ? f.UserId2 : f.UserId1) equals u.Id
-                where !_context.GroupMembers
-                        .Any(gm => gm.GroupId == groupId && gm.UserId == u.Id)
+                where u.IsActive == true && !u.IsDeleted
+                      && !_context.GroupMembers
+                            .Any(gm => gm.GroupId == groupId && gm.UserId == u.Id)
                 select new GroupMemberResponseDto
                 {
                     MemberId = u.Id,
@@ -163,6 +204,32 @@ namespace SplitWise.Infrastructure.Services
             )
             .AsNoTracking()
             .ToListAsync();
+        }
+        public async Task<GroupMember?> TransferAdminAsync(int groupId, int fromUserId, int toUserId)
+        {
+            var newAdminMember = await _context.GroupMembers
+                .FirstOrDefaultAsync(m => m.GroupId == groupId && m.UserId == toUserId
+                                       && m.IsActive == true && m.IsDeleted == false);
+
+            if (newAdminMember == null)
+                return null;
+
+            var currentAdminMember = await _context.GroupMembers
+                .FirstOrDefaultAsync(m => m.GroupId == groupId && m.UserId == fromUserId && m.IsAdmin == true);
+
+            if (currentAdminMember != null)
+            {
+                currentAdminMember.IsAdmin = false;
+                currentAdminMember.LastModifiedAt = DateTime.UtcNow;
+                currentAdminMember.LastModifiedBy = fromUserId;
+            }
+
+            newAdminMember.IsAdmin = true;
+            newAdminMember.LastModifiedAt = DateTime.UtcNow;
+            newAdminMember.LastModifiedBy = fromUserId;
+
+            await _context.SaveChangesAsync();
+            return newAdminMember;
         }
     }
 }

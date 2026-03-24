@@ -11,9 +11,10 @@ namespace SplitWise.Application.Interfaces.Repositories
 {
     public interface IGroupRepository
     {
-        Task<List<Groups>> Groups(int userId);
+        Task<List<GroupResponseDto>> Groups(int userId);
         Task<Groups> AddAsync(Groups group);
         Task<Groups> GetByIdAsync(int id);
+        Task<GroupResponseDto?> GetGroupDetailAsync(int id);
         Task<bool> IsAdmin(int userId, int groupId);
         Task<bool> CanAdd(GroupMember groupMember);
         Task<List<GroupMember>> AddMembersAsync(List<GroupMember> groupMembers);
@@ -21,5 +22,6 @@ namespace SplitWise.Application.Interfaces.Repositories
         Task<GroupMember> RemoveMemberAsync(int groupId, int userId);
         Task<List<GroupMemberResponseDto>> GetMembers(int groupId);
         Task<List<GroupMemberResponseDto>> NotInGroup(int groupId, int userId);
+        Task<GroupMember?> TransferAdminAsync(int groupId, int fromUserId, int toUserId);
     }
 }

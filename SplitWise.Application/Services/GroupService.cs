@@ -27,14 +27,7 @@ namespace SplitWise.Application.Services
         public async Task<List<GroupResponseDto>> Groups()
         {
             var userId = _loginRepository.GetUserId();
-            var groups = await _groupRepository.Groups(userId);
-
-            return groups.Select(x => new GroupResponseDto
-            {
-                GroupId = x.Id,
-                GroupName = x.GroupName,
-                Description = x.Description
-            }).ToList();
+            return await _groupRepository.Groups(userId);
         }
         public async Task<ApiResponse<object>> CreateGroupAsync(GroupRequestDto Data)
         {
@@ -70,15 +63,7 @@ namespace SplitWise.Application.Services
 
         public async Task<GroupResponseDto> GetGroupByIdAsync(int id)
         {
-            var group = await _groupRepository.GetByIdAsync(id);
-            var result = new GroupResponseDto
-            {
-                GroupId = group.Id,
-                GroupName = group.GroupName,
-                Description = group.Description,
-                CreatedByUserId = group.CreatedBy
-            };
-            return result;
+            return await _groupRepository.GetGroupDetailAsync(id);
         }
 
         //public async Task<GroupMemberRequestDto> AddMembers(int id)
@@ -251,6 +236,59 @@ namespace SplitWise.Application.Services
             var userId = _loginRepository.GetUserId();
 
             return await _groupRepository.NotInGroup(groupId, userId);
+        }
+        public async Task<ApiResponse<object>> TransferAdminAsync(int groupId, TransferAdminRequestDto request)
+        {
+            var userId = _loginRepository.GetUserId();
+
+            bool isAdmin = await _groupRepository.IsAdmin(userId, groupId);
+            if (!isAdmin)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Unauthorized to transfer admin role",
+                    errorType: "Unauthorized",
+                    errorMessage: "Only group admins can transfer the admin role",
+                    statusCode: StatusCodes.Status403Forbidden
+                );
+            }
+
+            var group = await _groupRepository.GetByIdAsync(groupId);
+            if (group == null)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Group not found",
+                    errorType: "NotFound",
+                    errorMessage: $"No group found with id {groupId}",
+                    statusCode: StatusCodes.Status404NotFound
+                );
+            }
+
+            if (request.NewAdminUserId == userId)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Invalid request",
+                    errorType: "ValidationError",
+                    errorMessage: "You are already the admin of this group",
+                    statusCode: StatusCodes.Status400BadRequest
+                );
+            }
+
+            var result = await _groupRepository.TransferAdminAsync(groupId, userId, request.NewAdminUserId);
+            if (result == null)
+            {
+                return ApiResponseFactory.Failure<object>(
+                    message: "Transfer failed",
+                    errorType: "NotFound",
+                    errorMessage: "The specified user is not an active member of this group",
+                    statusCode: StatusCodes.Status404NotFound
+                );
+            }
+
+            return ApiResponseFactory.Success<object>(
+                data: new { newAdminUserId = result.UserId, groupId = result.GroupId },
+                message: "Admin role transferred successfully",
+                statusCode: StatusCodes.Status200OK
+            );
         }
     }
 }

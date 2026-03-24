@@ -101,6 +101,12 @@ namespace SplitWise.Application.Services
         {
             var errors = new List<(string Type, string Message)>();
 
+            if (request.Amount is null && request.SettlementDate is null)
+            {
+                errors.Add(("ValidationError", "At least one of Amount or SettlementDate must be provided."));
+                return (null, errors);
+            }
+
             if (request.Amount.HasValue && request.Amount.Value <= 0)
             {
                 errors.Add(("ValidationError", "Amount must be greater than 0."));
